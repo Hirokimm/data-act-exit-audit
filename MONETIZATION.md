@@ -1,18 +1,19 @@
 # Monetization — canonical state
 
-Last verified: 2026-09-15 00:06 JST
+Last verified: 2026-09-15 00:32 JST
 
 ## B06 status
 
 **PASS via a real production-reachable lead route.** B06 does not require payment collection; the Stage B criterion permits a genuine lead route when users can reach and test it. Production offers a non-binding paid-pilot inquiry for either a one-time SaaS exit evidence audit or recurring monitoring.
 
 Verified production evidence:
-- B06 remediation release verified on exact production commit `8307545349533315173a6fa4ce0b4133a75c3851`
-- Public MVP run `34849946991` attempt 2: build/deploy/browser QA SUCCESS
-- homepage/contact disclose that GitHub Issue submission is public/indexable and requires sign-in
-- CTA resolves for anonymous users to GitHub login while preserving the paid-pilot template return path
-- raw `.github/ISSUE_TEMPLATE/paid-pilot.md` contains the non-binding paid offer, one-time and recurring options, public-submission notice and sign-in requirement
-- latest main `a06f85c050cbb2629185172f60bd5c6597028231` subsequently repaired synthetic-monitor KPI contamination; Public MVP run `34859559117` and IndexNow run `34859879026` are SUCCESS
+- B06 remediation release verified on exact production commit `8307545349533315173a6fa4ce0b4133a75c3851`.
+- Public MVP run `34849946991` attempt 2: build/deploy/browser QA SUCCESS.
+- homepage/contact disclose that GitHub Issue submission is public/indexable and requires sign-in.
+- CTA resolves for anonymous users to GitHub login while preserving the paid-pilot template return path.
+- raw `.github/ISSUE_TEMPLATE/paid-pilot.md` contains the non-binding paid offer, one-time and recurring options, public-submission notice and sign-in requirement.
+- Current main at this verification: `d5f9427a800f93dc203e28f51b401c375ec27968`.
+- Latest Public MVP run `34862783277` completed **SUCCESS** on that exact head SHA after the newest measurable-referral changes, providing fresh regression evidence that the public monetization surface remains deployed.
 
 This is a **lead/inquiry route, not checkout**. No payment, revenue, conversion, pricing acceptance, provider approval, or willingness-to-pay is claimed.
 
@@ -24,6 +25,12 @@ This is a **lead/inquiry route, not checkout**. No payment, revenue, conversion,
 4. **Hosted checkout upgrade: Stripe Payment Links or another verified provider.** Add when qualified interest makes payment collection worth testing; do not block Stage B on this because the real lead route already exists.
 5. **Merchant-of-record fallback: Lemon Squeezy/Paddle class provider if cross-border tax handling becomes material.** Provider terms and account eligibility must be reverified before activation.
 6. **Display ads / generic affiliates: low priority.** They are poorly aligned with a focused B2B compliance-evidence workflow and require more traffic than direct paid leads.
+
+## Current demand evidence
+
+- Fresh repository issue search at 2026-09-15 00:32 JST did not reveal a user-created paid-pilot/pricing/monitoring inquiry; only existing internal/status issues matched the broad monetization search.
+- Treat this as **no paid-pilot inquiry observed in the checked GitHub issue surface**, not as proof of zero demand.
+- The newest referral-attribution code/workflows are measurement infrastructure only; they are not evidence of visits, intent or willingness-to-pay.
 
 ## Acceptance / evidence discipline
 
