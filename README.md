@@ -1,6 +1,6 @@
-# Data Act Exit Audit
+# EU Data Act SaaS Switching & Data Portability Audit
 
-Public technical-evidence audit for **EU Data Act SaaS switching and data portability**. This is AI Venture Factory venture #003.
+Public technical-evidence audit for **EU Data Act SaaS switching, cloud exit readiness, data portability, export interfaces, and switching-fee evidence**. This is AI Venture Factory venture #003.
 
 **Live audit:** https://hirokimm.github.io/data-act-exit-audit/?utm_source=github&utm_medium=referral&utm_campaign=repo-readme
 
