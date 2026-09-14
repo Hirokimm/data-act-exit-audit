@@ -6,15 +6,17 @@ labels: []
 assignees: []
 ---
 
+> **Public submission notice:** submitting this template creates a public GitHub Issue. A GitHub account/sign-in is required. The issue and anything you enter will be publicly visible and may be indexed by search engines. Do not include company-confidential information, credentials, private contracts, personal data, security secrets, or other confidential information.
+
 ## What are you interested in?
 - [ ] One-time SaaS exit evidence audit
 - [ ] Recurring monitoring / evidence report
 
 ## Public SaaS / website to review
-Please provide only public URLs. Do not include credentials, private contracts, personal data, security secrets, or other confidential information.
+Please provide only public URLs.
 
 ## What would make this useful?
-Briefly describe the switching / export / open-interface / fee evidence you want monitored.
+Briefly describe only non-confidential switching / export / open-interface / fee evidence you want monitored.
 
 ## Timing
 Optional target timing.
