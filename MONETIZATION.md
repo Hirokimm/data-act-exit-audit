@@ -1,6 +1,6 @@
 # Monetization — canonical state
 
-Last verified: 2026-09-15 03:42 JST
+Last verified: 2026-09-15 05:00+ JST
 
 ## B06 status
 
@@ -19,21 +19,23 @@ Last verified: 2026-09-15 03:42 JST
 
 Primary remains recurring monitoring; one-time audit remains an independent offer path. Checkout remains contingent on qualified interest rather than being added as empty UI.
 
-## Current production evidence
+## Current production evidence — refreshed 2026-09-15 05:00+ JST
 
-- Added `.github/ISSUE_TEMPLATE/recurring-monitoring-pilot.md` for recurring public-evidence monitoring inquiries and `.github/ISSUE_TEMPLATE/one-time-audit-pilot.md` for one-time exit-readiness audit inquiries.
-- Both templates explicitly disclose that the inquiry is public, requires GitHub sign-in, is non-binding, must not contain confidential information, and does not establish scope/pricing/delivery commitments or legal advice.
-- `public/contact.html` routes the recurring CTA directly to the recurring template and the one-time CTA directly to the one-time template while retaining privacy-safe `offerType=monitoring|one_time` interest instrumentation.
-- Exact product head `cd1c14fba48ee84be02e799fe9fc4cfd6c6e3739` completed Public MVP run `34881885725` **SUCCESS**, verifying the production deployment after the offer-specific routing change.
-- Fresh open-Issue inspection at 2026-09-15 03:42 JST still found only the owner-created Stage A status issue in the open-Issue surface and no user-created paid-pilot inquiry. Record this only as **no paid-pilot inquiry observed in the checked open-Issue surface**, not as proof of zero demand.
+- Offer-specific public templates remain present for recurring monitoring and one-time audit inquiries and retain explicit public/sign-in/non-confidential/non-binding disclosures.
+- `public/contact.html` routes the two CTAs to the matching templates while retaining privacy-safe `offerType=monitoring|one_time` interest instrumentation.
+- The monetization implementation itself was previously verified on product head `cd1c14fba48ee84be02e799fe9fc4cfd6c6e3739` with Public MVP run `34881885725` **SUCCESS**.
+- The repository has since advanced for a Growth wording change to current main `62d7d50aee20f0e76fd7d01ec614236e1dda53ce`. The latest Public MVP run `34886093863` on that exact head completed **SUCCESS**, and IndexNow discovery run `34886249818` also completed **SUCCESS**. This repairs the stale production-lineage note without claiming a new monetization feature.
+- Fresh Issue inspection still shows only owner-created status/monitoring issues (#1–#4) and **no user-created paid-pilot inquiry in the checked issue surface**. This is not proof of zero demand.
+- External-AI red-team evidence already ingested centrally established that B06 may remain PASS for lead-route existence while checkout/revenue/demand remain unproven; no new completed external review changed that conclusion in this run.
 
-## Checkout fallback evidence — 2026-09-15
+## Checkout fallback evidence
 
-`PAYMENT_READINESS.md` now records provider evidence and the activation decision rule without inventing a price or account state.
+`PAYMENT_READINESS.md` records provider evidence and the activation decision rule without inventing a price or account state.
 
-- **Stripe Payment Links:** official Japan pages support one-time and recurring links and list card pricing starting at 3.6% per successful card charge; Payment Links is included in integrated pricing, while recurring charges can incur applicable Billing pricing. This is the first direct-checkout candidate after qualified interest, not an active account/checkout claim.
-- **Lemon Squeezy:** official pricing currently states 5% + $0.50 base ecommerce fee, with additional fees possible; it states that it acts as Merchant of Record and handles sales-tax/VAT collection and filing for processed transactions. It remains an independent cross-border fallback, subject to actual eligibility/onboarding.
-- **Stripe Managed Payments:** Stripe Japan now lists its Merchant-of-Record service at 3.5% in addition to Payments fees for successful Managed Payments transactions and describes indirect-tax handling in 75+ countries. It is retained as a third future alternative until actual eligibility and applicable pricing are verified.
+- **Stripe Payment Links:** first direct-checkout candidate after qualified interest, subject to actual account/onboarding verification.
+- **Lemon Squeezy:** independent Merchant-of-Record fallback for cross-border sales, subject to actual eligibility/onboarding.
+- **Stripe Managed Payments:** third future MoR alternative, subject to actual eligibility and applicable pricing.
+- Fresh Gmail review found no Stripe/Lemon Squeezy/Paddle/payment-provider activation or approval message attributable to #003.
 - No provider account activation, merchant approval, product price, checkout URL or payment has been verified for #003.
 
 ## Acceptance / evidence discipline
@@ -43,10 +45,12 @@ Primary remains recurring monitoring; one-time audit remains an independent offe
 - Do not infer payment-provider activation, purchases, revenue, demand, pricing acceptance or retention.
 - Offer-level instrumentation becomes demand evidence only when genuine retained events exist.
 - Public GitHub sign-in/visibility is a known conversion friction; do not add hosted checkout complexity before qualified interest justifies it.
+- B05 retained real-event evidence remains a separate unresolved gate.
 
 ## Next monetization actions
 
-- Measure genuine paid-pilot interest split between `monitoring` and `one_time` once retained real-event evidence is available.
-- Keep both offer-specific inquiry routes live while evidence is insufficient to eliminate either.
-- If qualified interest appears, first reduce GitHub sign-in/public-issue friction with a hosted lead route, define evidence-based scope/price, then verify Stripe Payment Links versus a Merchant-of-Record alternative in the actual provider account context.
-- If meaningful qualified traffic produces no paid-pilot interest, revisit positioning/offer before adding payment complexity.
+1. Measure genuine paid-pilot interest split between `monitoring` and `one_time` once retained real-event evidence is available.
+2. Keep both offer-specific inquiry routes live while evidence is insufficient to eliminate either.
+3. If qualified interest appears, first reduce GitHub sign-in/public-issue friction with a hosted lead route, define evidence-based scope/price, then verify Stripe Payment Links versus a Merchant-of-Record alternative in the actual provider account context.
+4. If meaningful qualified traffic produces no paid-pilot interest, revisit positioning/offer before adding payment complexity.
+5. Keep current deployment lineage synchronized after non-monetization changes so B06 evidence never points to an obsolete production head.
