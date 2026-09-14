@@ -9,7 +9,7 @@ This file is the repository-side handoff for AI Venture Factory #003. Business-s
 - Deployment identity: `health.json` records commit SHA, workflow run ID, repository and service identifier.
 - Automated monitoring: scheduled every six hours; build/deploy/browser-QA failures create or refresh the repository alert issue.
 - Production workflow verifies the public paid-pilot GitHub Issue route, sign-in/public-disclosure copy, issue-template existence, mobile/desktop browser QA, and the privacy-safe shared KPI transport contract.
-- Latest main before this status sync was `3531d36a8dad3e995eaee9e14682d8a915820ef8`; Public MVP run `34852412419` and IndexNow run `34852738890` succeeded on that main.
+- Runtime verification at 2026-09-15 JST resolved main `7c7f14f3d57a83528b82ef0491fcdd081b62007b`. Its latest monetization documentation follows an already production-verified referral-attribution head; current Stage B state remains governed by the central ledger.
 
 ## Current Stage B position
 
@@ -28,14 +28,16 @@ HQ independently verified and remediated both findings:
 - homepage and contact copy disclose before the CTA that GitHub sign-in is required and submitted issue content is public/may be indexed;
 - the issue template carries a matching Public submission notice;
 - CTA copy is `Open public paid-pilot inquiry`;
-- Public MVP run `34849946991` attempt 2 on exact production commit `8307545349533315173a6fa4ce0b4133a75c3851` completed build/deploy/browser-QA SUCCESS;
-- deploy job `103998412301` verified exact deployment identity, disclosure copy, CTA resolution and raw template contents.
+- production browser QA proved disclosure, CTA resolution and issue-template contents;
+- subsequent successful Public MVP deployments preserved the route.
 
 Final HQ decision keeps B06 PASS for **route existence only**. The completed Claude review issue has been closed after remediation.
 
 ## B05 shared KPI evidence
 
-The shared #002 KPI endpoint accepts fixed namespaced #003 events only from exact origin `https://hirokimm.github.io`. Production verification has demonstrated CORS preflight HTTP 204 and namespaced synthetic POST HTTP 200. These checks establish transport reliability, not retained measurement; B05 stays `未確認` until durable real event visibility is observed.
+The shared #002 KPI endpoint accepts fixed namespaced #003 events only from exact origin `https://hirokimm.github.io`. Production verification has demonstrated CORS preflight and namespaced synthetic POST success. These checks establish transport reliability, not retained measurement.
+
+Measurement integrity was repaired before the current evidence window: automated browser QA uses `?avf_synthetic=1` so client KPI emission is suppressed, and direct workflow KPI probes carry `x-avf-synthetic: 1`. Historical unmarked `data_act_*` events from before that repair are ineligible because automation could have generated them. B05 stays `未確認` until a later retained unmarked real event is objectively observed.
 
 ## Other Stage B evidence
 
@@ -44,10 +46,10 @@ The shared #002 KPI endpoint accepts fixed namespaced #003 events only from exac
 - B07/B08/B09: indexable acquisition surface, trust pages and security/data-handling controls.
 - B10: independent successful production mobile/desktop Chromium evidence remains authoritative.
 - B11: dedicated ChatGPT Project `03｜EU Data Act・SaaS切替/データ出口監査`, central ledger and this repository provide durable linkage.
-- B12: six-hour monitor and verified GitHub Issue alert path.
+- B12: six-hour monitor and verified GitHub Issue alert path; synthetic monitoring is isolated from B05 evidence.
 
 ## Next priority
 
-Obtain retained/observable REAL `data_act_*` production evidence from the shared Vercel Runtime Logs by locating `KPI` records from real events. Do not PASS B05 from code, CORS, synthetic POST success, or zero-valued Web Analytics alone.
+Obtain retained/observable REAL `data_act_*` production evidence from shared Vercel Runtime Logs. Prefer a post-fix `data_act_report_open`, `data_act_contact_open`, or `data_act_monetization_interest` interaction and require the matching retained `KPI` record to have no `synthetic:true` marker. Do not PASS B05 from code, CORS, synthetic POST success, historical unmarked traffic, or zero-valued Web Analytics alone.
 
 Continue qualified B2B acquisition and paid-pilot demand validation in parallel; do not confuse Stage B gate completion with commercial traction.
