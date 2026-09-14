@@ -51,10 +51,16 @@ jobs:
           ! grep -Eq 'JSON.stringify\(\{[^}]*(path|query|url)' public/kpi.js
           grep -q "connect-src 'self' https://ai-search-audit-dun.vercel.app" public/index.html
           grep -q 'fixed event names' public/privacy.html
+          grep -q 'Recommended next actions' render_report.py
+          grep -q 'View source evidence and scanner detail' render_report.py
+          grep -q 'How to use this report:' render_report.py
       - name: Generate fresh public evidence
         run: |
           python3 scan.py --targets targets.json --out results.json
           python3 render_report.py --input results.json --out report.html
+          grep -q 'Recommended next actions' report.html
+          grep -q 'View source evidence and scanner detail' report.html
+          grep -q 'How to use this report:' report.html
       - name: Assemble public artifact
         run: |
           mkdir -p dist
@@ -105,9 +111,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Pages may briefly serve the prior artifact after deploy-pages returns.
-          # Require the exact health identity and retry rather than misclassifying
-          # normal CDN convergence as a product regression.
           identity_ok=false
           for attempt in $(seq 1 12); do
             if curl --fail --silent --show-error --location --max-time 20 "${BASE_URL}health.json" -o health.json; then
@@ -139,6 +142,7 @@ jobs:
             test "${code}" = "200"
           done
           curl --fail --silent --location "${BASE_URL}" -o /tmp/home.html
+          curl --fail --silent --location "${BASE_URL}report.html" -o /tmp/report.html
           curl --fail --silent --location "${BASE_URL}contact.html" -o /tmp/contact.html
           curl --fail --silent --location "${BASE_URL}privacy.html" -o /tmp/privacy.html
           curl --fail --silent --location "${BASE_URL}kpi.js" -o /tmp/kpi.js
@@ -151,7 +155,10 @@ jobs:
           grep -q 'fixed event names' /tmp/privacy.html
           grep -q 'data_act_page_view' /tmp/kpi.js
           grep -q 'avf_synthetic' /tmp/kpi.js
-          grep -q 'UNKNOWN' <(curl --fail --silent --location "${BASE_URL}report.html")
+          grep -q 'UNKNOWN' /tmp/report.html
+          grep -q 'How to use this report:' /tmp/report.html
+          grep -q 'Recommended next actions' /tmp/report.html
+          grep -q 'View source evidence and scanner detail' /tmp/report.html
 
           cta_meta="$(curl --silent --show-error --location --max-time 20 -o /tmp/cta-body -w '%{http_code}|%{url_effective}' "$CTA_URL")"
           IFS='|' read -r cta_code cta_effective <<< "$cta_meta"
@@ -169,10 +176,6 @@ jobs:
           grep -q 'One-time SaaS exit evidence audit' /tmp/paid-pilot.md
           grep -q 'Recurring monitoring / evidence report' /tmp/paid-pilot.md
 
-          # The shared Vercel sink can converge independently of Pages. Retry the
-          # complete CORS + event contract so inter-service propagation is not a
-          # false outage while still requiring objective production evidence.
-          # This direct probe is synthetic and must never be eligible B05 evidence.
           kpi_ok=false
           for attempt in $(seq 1 12); do
             cors_headers="$(mktemp)"
@@ -193,7 +196,7 @@ jobs:
             sleep 10
           done
           test "$kpi_ok" = true
-          echo 'Production Pages identity and shared KPI transport contract verified with synthetic probe marking.'
+          echo 'Production Pages identity, decision-ready report structure, and shared KPI transport contract verified.'
 
   browser-qa:
     if: github.ref == 'refs/heads/main'
