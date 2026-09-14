@@ -11,6 +11,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  issues: write
 
 concurrency:
   group: pages
@@ -98,3 +99,39 @@ jobs:
           done
           grep -q 'SaaS Exit Evidence Audit' <(curl --fail --silent --location "${BASE_URL}")
           grep -q 'UNKNOWN' <(curl --fail --silent --location "${BASE_URL}report.html")
+
+  notify:
+    if: ${{ always() && (needs.build.result == 'failure' || needs.deploy.result == 'failure' || contains(github.event.head_commit.message, '[test-alert]')) }}
+    runs-on: ubuntu-latest
+    needs: [build, deploy]
+    steps:
+      - name: Create or refresh user-visible monitoring alert
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '[ALERT] #003 Public MVP monitor failure';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const body = [
+              'AI Venture Factory #003 automated monitor alert.',
+              '',
+              `Build result: ${process.env.BUILD_RESULT}`,
+              `Deploy result: ${process.env.DEPLOY_RESULT}`,
+              `Workflow run: ${runUrl}`,
+              `Commit: ${context.sha}`,
+              '',
+              'If this was the explicit B12 alert-path test and both jobs are green, no production outage occurred.'
+            ].join('\n');
+            const { data: issues } = await github.rest.issues.listForRepo({owner, repo, state: 'open', per_page: 100});
+            const existing = issues.find(i => i.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({owner, repo, issue_number: existing.number, body});
+              core.info(`refreshed issue #${existing.number}`);
+            } else {
+              const created = await github.rest.issues.create({owner, repo, title, body, assignees: [owner]});
+              core.info(`created issue #${created.data.number}`);
+            }
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
