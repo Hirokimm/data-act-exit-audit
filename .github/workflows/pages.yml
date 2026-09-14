@@ -34,8 +34,12 @@ jobs:
           test -f public/terms.html
           test -f public/contact.html
           test -f .github/ISSUE_TEMPLATE/paid-pilot.md
-          grep -q 'Request a paid pilot' public/index.html
+          grep -q 'Open public paid-pilot inquiry' public/index.html
           grep -q 'template=paid-pilot.md' public/index.html
+          grep -q 'public GitHub Issue' public/index.html
+          grep -q 'GitHub account/sign-in is required' public/index.html
+          grep -q 'public GitHub Issue' public/contact.html
+          grep -q 'Public submission notice' .github/ISSUE_TEMPLATE/paid-pilot.md
           grep -q 'monetization_interest' public/index.html
           grep -q 'monetization_interest' public/kpi.js
       - name: Generate fresh public evidence
@@ -81,10 +85,12 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Verify anonymous production
+      - name: Verify anonymous production and paid-pilot route
         env:
           BASE_URL: ${{ steps.deployment.outputs.page_url }}
           EXPECTED_SHA: ${{ github.sha }}
+          CTA_URL: https://github.com/Hirokimm/data-act-exit-audit/issues/new?template=paid-pilot.md
+          TEMPLATE_RAW: https://raw.githubusercontent.com/Hirokimm/data-act-exit-audit/main/.github/ISSUE_TEMPLATE/paid-pilot.md
         run: |
           set -euo pipefail
           for attempt in 1 2 3 4 5 6; do
@@ -107,10 +113,33 @@ jobs:
           curl --fail --silent --location "${BASE_URL}" -o /tmp/home.html
           curl --fail --silent --location "${BASE_URL}contact.html" -o /tmp/contact.html
           grep -q 'SaaS Exit Evidence Audit' /tmp/home.html
-          grep -q 'Request a paid pilot' /tmp/home.html
+          grep -q 'Open public paid-pilot inquiry' /tmp/home.html
           grep -q 'template=paid-pilot.md' /tmp/home.html
-          grep -q 'Request a paid pilot' /tmp/contact.html
+          grep -q 'public GitHub Issue' /tmp/home.html
+          grep -q 'GitHub account/sign-in is required' /tmp/home.html
+          grep -q 'public GitHub Issue' /tmp/contact.html
           grep -q 'UNKNOWN' <(curl --fail --silent --location "${BASE_URL}report.html")
+
+          # Verify the external CTA target itself is reachable. Anonymous users may
+          # legitimately resolve to GitHub login; the return path preserves the
+          # issue-template URL and the site discloses that sign-in is required.
+          cta_meta="$(curl --silent --show-error --location --max-time 20 -o /tmp/cta-body -w '%{http_code}|%{url_effective}' "$CTA_URL")"
+          IFS='|' read -r cta_code cta_effective <<< "$cta_meta"
+          echo "paid-pilot CTA: HTTP $cta_code effective=$cta_effective"
+          test "$cta_code" = "200"
+          case "$cta_effective" in
+            https://github.com/login*|https://github.com/Hirokimm/data-act-exit-audit/issues/new*) ;;
+            *) echo "unexpected paid-pilot route: $cta_effective"; exit 1 ;;
+          esac
+
+          # Verify that the named template is publicly present with the disclosures
+          # expected by the CTA. This guards against a dead/misnamed template link.
+          curl --fail --silent --show-error --location --max-time 20 "$TEMPLATE_RAW" -o /tmp/paid-pilot.md
+          grep -q 'name: Paid pilot inquiry' /tmp/paid-pilot.md
+          grep -q 'Public submission notice' /tmp/paid-pilot.md
+          grep -q 'GitHub account/sign-in is required' /tmp/paid-pilot.md
+          grep -q 'One-time SaaS exit evidence audit' /tmp/paid-pilot.md
+          grep -q 'Recurring monitoring / evidence report' /tmp/paid-pilot.md
 
   browser-qa:
     if: github.ref == 'refs/heads/main'
