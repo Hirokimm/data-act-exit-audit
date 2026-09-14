@@ -70,6 +70,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
@@ -100,10 +102,49 @@ jobs:
           grep -q 'SaaS Exit Evidence Audit' <(curl --fail --silent --location "${BASE_URL}")
           grep -q 'UNKNOWN' <(curl --fail --silent --location "${BASE_URL}report.html")
 
-  notify:
-    if: ${{ always() && (needs.build.result == 'failure' || needs.deploy.result == 'failure' || contains(github.event.head_commit.message, '[test-alert]')) }}
+  browser-qa:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: [build, deploy]
+    needs: deploy
+    timeout-minutes: 15
+    env:
+      BASE_URL: ${{ needs.deploy.outputs.page_url }}
+    steps:
+      - name: Install Lighthouse browser QA
+        run: npm install --global lighthouse@12
+      - name: Render production in mobile and desktop Chromium
+        run: |
+          set -euo pipefail
+          lighthouse "${BASE_URL}" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=mobile.json
+          lighthouse "${BASE_URL}" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=desktop.json
+      - name: Assert browser usability and primary navigation
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          for (const file of ['mobile.json', 'desktop.json']) {
+            const r = JSON.parse(fs.readFileSync(file, 'utf8'));
+            if (r.runtimeError) throw new Error(`${file}: ${JSON.stringify(r.runtimeError)}`);
+            const cats = r.categories || {};
+            for (const key of ['accessibility', 'best-practices']) {
+              const score = cats[key]?.score;
+              console.log(`${file} ${key}:`, score);
+              if (typeof score !== 'number' || score < 0.90) {
+                throw new Error(`${file}: ${key} below 0.90`);
+              }
+            }
+          }
+          NODE
+          for path in report.html results.json contact.html; do
+            code="$(curl --silent --show-error --location --max-time 20 -o /tmp/body -w '%{http_code}' "${BASE_URL}${path}")"
+            echo "browser QA navigation ${path}: HTTP ${code}"
+            test "${code}" = "200"
+          done
+
+  notify:
+    if: ${{ always() && (needs.build.result == 'failure' || needs.deploy.result == 'failure' || needs.browser-qa.result == 'failure' || contains(github.event.head_commit.message, '[test-alert]')) }}
+    runs-on: ubuntu-latest
+    needs: [build, deploy, browser-qa]
     steps:
       - name: Create or refresh user-visible monitoring alert
         uses: actions/github-script@v7
@@ -118,10 +159,11 @@ jobs:
               '',
               `Build result: ${process.env.BUILD_RESULT}`,
               `Deploy result: ${process.env.DEPLOY_RESULT}`,
+              `Browser QA result: ${process.env.BROWSER_QA_RESULT}`,
               `Workflow run: ${runUrl}`,
               `Commit: ${context.sha}`,
               '',
-              'If this was the explicit B12 alert-path test and both jobs are green, no production outage occurred.'
+              'If this was the explicit B12 alert-path test and all jobs are green, no production outage occurred.'
             ].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({owner, repo, state: 'open', per_page: 100});
             const existing = issues.find(i => i.title === title);
@@ -135,3 +177,4 @@ jobs:
         env:
           BUILD_RESULT: ${{ needs.build.result }}
           DEPLOY_RESULT: ${{ needs.deploy.result }}
+          BROWSER_QA_RESULT: ${{ needs.browser-qa.result }}
