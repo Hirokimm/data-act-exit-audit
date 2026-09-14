@@ -1,6 +1,6 @@
 # Monetization — canonical state
 
-Last verified: 2026-09-14 20:33 JST
+Last verified: 2026-09-14 21:12 JST
 
 ## B06 status
 
@@ -8,17 +8,35 @@ Last verified: 2026-09-14 20:33 JST
 
 ## Route ranking
 
-1. **Primary: recurring monitoring + evidence report** — strongest fit with the product's recurring compliance/change-detection value and automation profile.
-2. **Independent fallback: one-time paid exit-readiness audit/report** — lower commitment and simpler purchase decision; useful before recurring demand is proven.
-3. **Payment-stack fallback:** prefer a no-code hosted checkout to minimize build work. Stripe Payment Links supports one-time and recurring payments in Japan; current official Japan pricing starts at 3.6% per successful card charge, with recurring Billing pricing applying separately. For EU/global tax-compliance simplification, Merchant-of-Record alternatives remain credible: Lemon Squeezy and Paddle both publish 5% + $0.50 base checkout pricing, with provider-specific/additional fees and eligibility to be verified at onboarding.
+1. **Primary product route: recurring monitoring + evidence report.** Best fit with recurring public-document change detection, low ongoing human labor, and recurring value. This remains the target product model; demand/CVR are not assumed.
+2. **Independent product fallback: one-time paid exit-readiness audit/report.** Lower buyer commitment and operationally simple; useful for validating willingness-to-pay before recurring demand is established.
+3. **Checkout stack — Stripe Payment Links first for implementation speed.** Official Japan documentation currently supports shareable one-time and recurring Payment Links; Payment Links are included with Payments, standard card pricing starts at 3.6% per successful card charge, and recurring charges also incur applicable Stripe Billing pricing. A provider-generated live link is still required before B06 can PASS.
+4. **Checkout fallback — Lemon Squeezy Merchant of Record.** Official pricing currently publishes 5% + $0.50 per transaction as base ecommerce pricing, with possible additional fees; it supports no-code checkout and subscriptions and acts as Merchant of Record for sales-tax/VAT handling. This can reduce cross-border tax operational burden if onboarding eligibility is satisfied.
+5. **Additional independent provider fallback — Paddle/MoR remains a candidate but is not promoted above the two verified options without fresh provider/account evidence.**
+
+## Current account / approval evidence
+
+- Gmail search at 2026-09-14 21:12 JST found no new message in the prior 2 days matching AdSense, Stripe, Semrush, Impact, Adobe, Partnerize, UPDF, CJ, Lemon Squeezy, Paddle, affiliate, or payment activation/onboarding terms.
+- No payment-provider approval, live checkout URL, payout readiness, or legal/tax acceptance is therefore claimed.
+- No demand, CVR, revenue, or approval rate is inferred.
+
+## B06 acceptance test
+
+B06 may move to PASS only after all of the following are evidenced:
+
+1. a real provider-generated checkout/payment URL exists;
+2. the production site exposes a user-reachable monetization CTA to that URL;
+3. anonymous production reachability is tested end-to-end through the checkout landing surface;
+4. checkout-click/conversion-near events are instrumented without sensitive user data;
+5. required paid/affiliate disclosures are production-reachable.
 
 ## Constraints
 
 - Do not invent or expose a checkout URL before a real provider-generated link exists.
-- Do not mark B06 PASS until a real user can reach/test the monetization path in production.
-- Provider identity, payout, tax/legal acceptance, or irreversible account approvals are WAITING_HUMAN only when actually presented by the provider.
-- Routine dashboard/setup work is WORK_ELIGIBLE.
+- Provider identity, payout, tax/legal acceptance, or irreversible account approvals are `WAITING_HUMAN` only when actually presented by the provider.
+- Routine dashboard/setup work is `WORK_ELIGIBLE`.
+- A pending provider route never blocks research/preparation of independent fallbacks.
 
 ## Next action
 
-Create a real hosted checkout for the primary or one-time fallback, then wire the verified URL into the public site and instrument checkout-click/conversion events. If provider onboarding requests identity/payout/legal acceptance, surface exactly that user-only step; otherwise continue autonomously.
+Create a real hosted checkout for either the recurring offer or the one-time fallback, then wire the verified URL into production and instrument checkout-click/conversion-near events. Stripe Payment Links is the shortest currently verified implementation path; Lemon Squeezy remains the independent MoR fallback. If actual provider onboarding presents identity/payout/tax/legal acceptance, surface exactly that user-only step; otherwise continue autonomously.
