@@ -103,18 +103,35 @@ jobs:
           KPI_ORIGIN: https://hirokimm.github.io
         run: |
           set -euo pipefail
-          for attempt in 1 2 3 4 5 6; do
-            if curl --fail --silent --show-error --location --max-time 20 "${BASE_URL}health.json" -o health.json; then break; fi
-            sleep 5
-          done
-          python3 - <<'PY'
+
+          # Pages may briefly serve the prior artifact after deploy-pages returns.
+          # Require the exact health identity and retry rather than misclassifying
+          # normal CDN convergence as a product regression.
+          identity_ok=false
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent --show-error --location --max-time 20 "${BASE_URL}health.json" -o health.json; then
+              if python3 - <<'PY'
           import json, os
           data=json.load(open('health.json'))
-          assert data.get('ok') is True
-          assert data.get('service') == 'venture-003-data-act-exit-audit'
-          assert data.get('commit') == os.environ['EXPECTED_SHA']
-          print('deployment identity verified:', data['commit'])
+          ok=(data.get('ok') is True and
+              data.get('service') == 'venture-003-data-act-exit-audit' and
+              data.get('commit') == os.environ['EXPECTED_SHA'])
+          if ok:
+              print('deployment identity verified:', data['commit'])
+              raise SystemExit(0)
+          print('waiting for Pages convergence; current=', data.get('commit'))
+          raise SystemExit(1)
           PY
+              then
+                identity_ok=true
+                break
+              fi
+            fi
+            echo "Waiting for exact Pages deployment identity ($attempt/12)..."
+            sleep 5
+          done
+          test "$identity_ok" = true
+
           for path in '' report.html privacy.html terms.html contact.html results.json robots.txt sitemap.xml kpi.js; do
             code="$(curl --silent --show-error --location --max-time 20 -o /tmp/body -w '%{http_code}' "${BASE_URL}${path}")"
             echo "${path:-index.html}: HTTP ${code}"
@@ -134,9 +151,6 @@ jobs:
           grep -q 'data_act_page_view' /tmp/kpi.js
           grep -q 'UNKNOWN' <(curl --fail --silent --location "${BASE_URL}report.html")
 
-          # Verify the external CTA target itself is reachable. Anonymous users may
-          # legitimately resolve to GitHub login; the return path preserves the
-          # issue-template URL and the site discloses that sign-in is required.
           cta_meta="$(curl --silent --show-error --location --max-time 20 -o /tmp/cta-body -w '%{http_code}|%{url_effective}' "$CTA_URL")"
           IFS='|' read -r cta_code cta_effective <<< "$cta_meta"
           echo "paid-pilot CTA: HTTP $cta_code effective=$cta_effective"
@@ -146,8 +160,6 @@ jobs:
             *) echo "unexpected paid-pilot route: $cta_effective"; exit 1 ;;
           esac
 
-          # Verify that the named template is publicly present with the disclosures
-          # expected by the CTA. This guards against a dead/misnamed template link.
           curl --fail --silent --show-error --location --max-time 20 "$TEMPLATE_RAW" -o /tmp/paid-pilot.md
           grep -q 'name: Paid pilot inquiry' /tmp/paid-pilot.md
           grep -q 'Public submission notice' /tmp/paid-pilot.md
@@ -155,24 +167,30 @@ jobs:
           grep -q 'One-time SaaS exit evidence audit' /tmp/paid-pilot.md
           grep -q 'Recurring monitoring / evidence report' /tmp/paid-pilot.md
 
-          # Verify the exact cross-origin contract used by the production page.
-          cors_headers="$(mktemp)"
-          preflight_code="$(curl --silent --show-error --max-time 20 -o /dev/null -D "$cors_headers" -w '%{http_code}' \
-            -X OPTIONS -H "Origin: ${KPI_ORIGIN}" -H 'Access-Control-Request-Method: POST' \
-            -H 'Access-Control-Request-Headers: content-type' "${KPI_URL}")"
-          echo "KPI CORS preflight: HTTP ${preflight_code}"
-          test "${preflight_code}" = "204"
-          grep -qi "^access-control-allow-origin: ${KPI_ORIGIN}" "$cors_headers"
-
-          # Synthetic namespaced event proves the deployed sink accepts the exact
-          # privacy-safe event contract. It is operational verification, not traffic.
-          event_body="$(mktemp)"
-          event_code="$(curl --silent --show-error --max-time 20 -o "$event_body" -w '%{http_code}' \
-            -H "Origin: ${KPI_ORIGIN}" -H 'content-type: application/json' \
-            -d '{"event":"data_act_page_view"}' "${KPI_URL}")"
-          echo "KPI sink POST: HTTP ${event_code}"
-          test "${event_code}" = "200"
-          grep -q '"ok":true' "$event_body"
+          # The shared Vercel sink can converge independently of Pages. Retry the
+          # complete CORS + event contract so inter-service propagation is not a
+          # false outage while still requiring objective production evidence.
+          kpi_ok=false
+          for attempt in $(seq 1 12); do
+            cors_headers="$(mktemp)"
+            preflight_code="$(curl --silent --show-error --max-time 20 -o /dev/null -D "$cors_headers" -w '%{http_code}' \
+              -X OPTIONS -H "Origin: ${KPI_ORIGIN}" -H 'Access-Control-Request-Method: POST' \
+              -H 'Access-Control-Request-Headers: content-type' "${KPI_URL}" || true)"
+            event_body="$(mktemp)"
+            event_code="$(curl --silent --show-error --max-time 20 -o "$event_body" -w '%{http_code}' \
+              -H "Origin: ${KPI_ORIGIN}" -H 'content-type: application/json' \
+              -d '{"event":"data_act_page_view"}' "${KPI_URL}" || true)"
+            echo "KPI contract attempt $attempt/12: preflight=${preflight_code} event=${event_code}"
+            if [[ "$preflight_code" == "204" ]] && \
+               grep -qi "^access-control-allow-origin: ${KPI_ORIGIN}" "$cors_headers" && \
+               [[ "$event_code" == "200" ]] && grep -q '"ok":true' "$event_body"; then
+              kpi_ok=true
+              break
+            fi
+            sleep 10
+          done
+          test "$kpi_ok" = true
+          echo 'Production Pages identity and shared KPI transport contract verified.'
 
   browser-qa:
     if: github.ref == 'refs/heads/main'
