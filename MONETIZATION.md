@@ -1,60 +1,48 @@
 # Monetization — canonical state
 
-Last verified: 2026-09-15 00:32 JST
+Last verified: 2026-09-15 02:04 JST
 
 ## B06 status
 
-**PASS via a real production-reachable lead route.** B06 does not require payment collection; the Stage B criterion permits a genuine lead route when users can reach and test it. Production offers a non-binding paid-pilot inquiry for either a one-time SaaS exit evidence audit or recurring monitoring.
-
-Verified production evidence:
-- B06 remediation release verified on exact production commit `8307545349533315173a6fa4ce0b4133a75c3851`.
-- Public MVP run `34849946991` attempt 2: build/deploy/browser QA SUCCESS.
-- homepage/contact disclose that GitHub Issue submission is public/indexable and requires sign-in.
-- CTA resolves for anonymous users to GitHub login while preserving the paid-pilot template return path.
-- raw `.github/ISSUE_TEMPLATE/paid-pilot.md` contains the non-binding paid offer, one-time and recurring options, public-submission notice and sign-in requirement.
-- Current main at this verification: `d5f9427a800f93dc203e28f51b401c375ec27968`.
-- Latest Public MVP run `34862783277` completed **SUCCESS** on that exact head SHA after the newest measurable-referral changes, providing fresh regression evidence that the public monetization surface remains deployed.
-
-This is a **lead/inquiry route, not checkout**. No payment, revenue, conversion, pricing acceptance, provider approval, or willingness-to-pay is claimed.
+**PASS via real production-reachable lead routes.** Production now exposes two distinct non-binding paid-pilot paths: recurring monitoring + evidence report and a one-time exit-readiness audit. Both route to the real public GitHub paid-pilot Issue template. This is a lead/inquiry route, not checkout; no payment, revenue, conversion, pricing acceptance or willingness-to-pay is claimed.
 
 ## Route ranking
 
-1. **Primary target product: recurring monitoring + evidence report.** Strongest fit with recurring public-document change detection and low ongoing human labor; actual demand/CVR/retention remain unproven.
-2. **Independent fallback: one-time paid exit-readiness audit/report.** Lower buyer commitment and operationally simpler; the same production paid-pilot route supports it.
-3. **Current Stage-B transaction mechanism: public GitHub paid-pilot lead inquiry.** Real and testable, but GitHub sign-in/public-issue friction makes it a validation mechanism rather than the desired long-term checkout UX.
-4. **Hosted checkout upgrade: Stripe Payment Links or another verified provider.** Add when qualified interest makes payment collection worth testing; do not block Stage B on this because the real lead route already exists.
-5. **Merchant-of-record fallback: Lemon Squeezy/Paddle class provider if cross-border tax handling becomes material.** Provider terms and account eligibility must be reverified before activation.
-6. **Display ads / generic affiliates: low priority.** They are poorly aligned with a focused B2B compliance-evidence workflow and require more traffic than direct paid leads.
+| Route | Relative EV | Speed | Traffic dependence | Approval friction | Recurring value | Automation / labor | Platform risk | Reversibility |
+|---|---|---|---|---|---|---|---|---|
+| Recurring monitoring + evidence report | Highest current fit; demand/WTP unproven | High: live lead route | Low–medium | Low before payment | High | High automation potential as scans repeat | Low | High |
+| One-time exit-readiness audit/report | Strong independent fallback | High: live lead route | Low–medium | Low | None | Medium; report generation should remain standardized | Low | High |
+| Hosted checkout / subscription | Future upgrade | Medium | Low | Payment onboarding | High or one-time | High once offer is proven | Medium | High |
+| Merchant-of-record checkout | Future cross-border fallback | Medium | Low | Provider eligibility/onboarding | High or one-time | High once live | Medium–high provider dependence | High |
+| Display ads / generic affiliate | Low fit | Medium | High | External approval possible | Traffic/referral-driven | High automation | Medium–high | High |
 
-## Current demand evidence
+Primary remains recurring monitoring; one-time audit is maintained as a genuinely independent offer path rather than a checkbox hidden behind one generic CTA.
 
-- Fresh repository issue search at 2026-09-15 00:32 JST did not reveal a user-created paid-pilot/pricing/monitoring inquiry; only existing internal/status issues matched the broad monetization search.
-- Treat this as **no paid-pilot inquiry observed in the checked GitHub issue surface**, not as proof of zero demand.
-- The newest referral-attribution code/workflows are measurement infrastructure only; they are not evidence of visits, intent or willingness-to-pay.
+## Current production evidence
+
+- `public/contact.html` now exposes separate CTA copy for recurring monitoring and one-time audit, each pointing to the existing real paid-pilot GitHub Issue template and clearly disclosing public visibility/sign-in/non-binding scope.
+- `public/kpi.js` now passes only allow-listed offer types (`monitoring`, `one_time`) to the shared #002 KPI sink on paid-pilot interest clicks.
+- The shared sink itself was updated to retain/forward only the same allow-listed offer types, allowing route-level comparison without user/private data in KPI records.
+- Exact product head `01295d1ab78d0235daafb526adf0db6700d7d051` deployed successfully through Public MVP run `34871770130` (**SUCCESS**), including the production deployment/verification workflow.
+- Fresh open-Issue inspection found only the existing owner status issue and no user-created paid-pilot inquiry. Record this only as **no paid-pilot inquiry observed in the checked open-Issue surface**, not as proof of zero demand.
+- Vercel connector access currently cannot read the shared sink Runtime Logs because it returns no teams; this is an observability-access limitation only.
 
 ## Acceptance / evidence discipline
 
-B06 remains PASS only while the real public inquiry route stays reachable and accurately disclosed. A broken, disabled or placeholder CTA would invalidate the evidence.
+B06 remains PASS only while at least one real public inquiry path is reachable and accurately disclosed. A placeholder, disabled CTA or fictitious checkout would not count.
 
-Do not confuse this with:
-- payment-provider activation,
-- a completed purchase,
-- revenue,
-- observed paid demand,
-- pricing acceptance,
-- or B05 persistent real-event retention.
-
-Historical unmarked `data_act_*` events from before the latest monitor-contamination repair are not eligible real-user evidence. Post-fix retained events must be free of `synthetic:true` to support B05.
+Do not confuse B06 with payment-provider activation, completed purchase, revenue, observed demand, pricing acceptance, or B05 persistent real-event retention. Offer-level instrumentation is infrastructure; it becomes demand evidence only when genuine retained events exist.
 
 ## Constraints
 
-- Do not invent pricing, purchases, conversions or provider approval.
-- Do not request credentials, private contracts, personal data, security secrets or confidential information in the public issue.
-- Provider identity, payout, tax/legal acceptance, or irreversible account approvals are `WAITING_HUMAN` only when actually presented by a provider.
-- Keep checkout as an independent monetization experiment, not a prerequisite for the already-valid lead route.
+- Never invent pricing, purchases, conversions or provider approval.
+- Never request credentials, private contracts, personal data, security secrets or confidential information in the public issue.
+- Provider identity, payout, tax/legal acceptance or irreversible account approvals are `WAITING_HUMAN` only when actually presented.
+- Keep checkout as an independent future experiment, not a prerequisite for the valid Stage-B lead route.
 
 ## Next monetization actions
 
-- Measure real `data_act_monetization_interest` / contact / report engagement only after the post-fix retained-event evidence path is available.
-- If qualified paid-pilot interest appears, reduce GitHub-sign-in friction with a hosted lead/checkout path and then test explicit pricing/payment.
-- If meaningful qualified traffic produces no paid-pilot interest, revisit positioning/offer before introducing payment complexity.
+- Measure real paid-pilot interest split between `monitoring` and `one_time` once the post-repair retained-event evidence path is available.
+- Keep both offers live while there is insufficient evidence to eliminate either route.
+- If qualified interest appears, reduce GitHub public/sign-in friction with a hosted lead/checkout path and then test explicit pricing/payment.
+- If meaningful qualified traffic produces no paid-pilot interest, revisit positioning/offer before adding payment complexity.
