@@ -9,15 +9,15 @@ This file is the repository-side handoff for AI Venture Factory #003. Business-s
 - Deployment identity: `health.json` records commit SHA, workflow run ID, repository and service identifier.
 - Automated monitoring: scheduled every six hours; build/deploy/browser-QA failures create or refresh the repository alert issue.
 - Production workflow verifies the public paid-pilot GitHub Issue route, sign-in/public-disclosure copy, issue-template existence, mobile/desktop browser QA, and the privacy-safe shared KPI transport contract.
-- Runtime verification at 2026-09-15 JST resolved main `7c7f14f3d57a83528b82ef0491fcdd081b62007b`. Its latest monetization documentation follows an already production-verified referral-attribution head; current Stage B state remains governed by the central ledger.
+- Resolve current main/deployment/workflow identities at runtime; do not treat a historical SHA or run number in documentation as permanently current.
 
 ## Current Stage B position
 
 - Central ledger: **11/12 PASS**.
 - B01/B02/B03/B04/B06/B07/B08/B09/B10/B11/B12 are PASS.
 - B05 remains `未確認`: the static client sends namespaced `data_act_page_view`, `data_act_report_open`, `data_act_contact_open`, and `data_act_monetization_interest` events to the Factory Vercel KPI endpoint. Transport/CORS and synthetic event acceptance are verified, but retained/observable REAL production-event evidence is still required before PASS.
-- 2026-09-14 user-observed Vercel Web Analytics showed `Visitors=0` and `Page Views=0` despite a real #003 iPhone page-open and real #002 use. That path is insufficient evidence and must not be treated as retained measurement.
-- The shared `/api/kpi` endpoint independently writes accepted namespaced events as `KPI` records to Vercel Runtime Logs before best-effort Analytics forwarding. Runtime Logs are therefore the current shortest verification path.
+- 2026-09-14 user-observed Vercel Web Analytics showed `Visitors=0` and `Page Views=0` despite a real #003 iPhone page-open and real #002 use. That snapshot is insufficient evidence and must not be treated as retained measurement.
+- The shared `/api/kpi` endpoint independently writes accepted namespaced events as `KPI` records to Vercel Runtime Logs. Runtime Logs remain the strongest verification path.
 - B06 is PASS for a real non-binding paid-pilot lead route from homepage/contact to the repository `paid-pilot.md` issue template. It is not evidence of checkout, payment, revenue, conversion, pricing acceptance or willingness-to-pay.
 
 ## B06 external red-team and remediation
@@ -35,9 +35,14 @@ Final HQ decision keeps B06 PASS for **route existence only**. The completed Cla
 
 ## B05 shared KPI evidence
 
-The shared #002 KPI endpoint accepts fixed namespaced #003 events only from exact origin `https://hirokimm.github.io`. Production verification has demonstrated CORS preflight and namespaced synthetic POST success. These checks establish transport reliability, not retained measurement.
+The shared #002 KPI endpoint accepts fixed namespaced #003 events only from exact origin `https://hirokimm.github.io`. Production verification has demonstrated CORS preflight and namespaced synthetic POST success. These checks establish transport reliability, not retained real-user measurement.
 
-Measurement integrity was repaired before the current evidence window: automated browser QA uses `?avf_synthetic=1` so client KPI emission is suppressed, and direct workflow KPI probes carry `x-avf-synthetic: 1`. Historical unmarked `data_act_*` events from before that repair are ineligible because automation could have generated them. B05 stays `未確認` until a later retained unmarked real event is objectively observed.
+Two separate contamination classes have now been repaired:
+
+1. #003 monitoring previously had automation paths that could create unmarked `data_act_*` traffic. Browser QA now uses `?avf_synthetic=1` to suppress client emission, and direct workflow KPI probes use `x-avf-synthetic: 1`.
+2. A later shared-sink audit found that header-marked synthetic probes were correctly tagged `synthetic:true` in Runtime Logs but were still forwarded to Vercel Analytics without a discriminator. The shared sink now excludes `synthetic:true` records from Analytics entirely, with regression tests and green production verification on the repaired #002 lineage.
+
+Evidence rule: historical unmarked `data_act_*` from before the #003 monitoring repair is ineligible, and Analytics event counts from before the shared-sink synthetic-exclusion repair are also ineligible as standalone B05 evidence. Eligible evidence must occur after both repairs and be tied to a genuine production interaction. A retained unmarked Runtime Log `KPI` record remains the preferred proof; post-repair Analytics may corroborate but does not by itself justify PASS without objective real-interaction linkage.
 
 ## Other Stage B evidence
 
@@ -50,6 +55,6 @@ Measurement integrity was repaired before the current evidence window: automated
 
 ## Next priority
 
-Obtain retained/observable REAL `data_act_*` production evidence from shared Vercel Runtime Logs. Prefer a post-fix `data_act_report_open`, `data_act_contact_open`, or `data_act_monetization_interest` interaction and require the matching retained `KPI` record to have no `synthetic:true` marker. Do not PASS B05 from code, CORS, synthetic POST success, historical unmarked traffic, or zero-valued Web Analytics alone.
+Obtain retained/observable REAL `data_act_*` production evidence after both evidence-integrity repair cutoffs. Prefer `data_act_report_open`, `data_act_contact_open`, or `data_act_monetization_interest` and require the matching retained Runtime Log `KPI` record to have no `synthetic:true` marker. Do not PASS B05 from code, CORS, synthetic POST success, historical ambiguous traffic, pre-repair Analytics counts, or zero-valued Web Analytics alone.
 
 Continue qualified B2B acquisition and paid-pilot demand validation in parallel; do not confuse Stage B gate completion with commercial traction.
