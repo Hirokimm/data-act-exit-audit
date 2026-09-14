@@ -1,0 +1,28 @@
+# EU Data Act SaaS Switching & Data Portability Audit
+
+> Public-evidence audit for SaaS and cloud switching readiness under the EU Data Act. The project examines observable Terms, pricing, help, export and API surfaces for switching, data portability, open-interface and fee evidence. It is technical QA, not legal advice or certification.
+
+## Primary pages
+- [EU Data Act SaaS Switching & Data Portability Audit](https://hirokimm.github.io/data-act-exit-audit/): Public landing page and project scope.
+- [Evidence report](https://hirokimm.github.io/data-act-exit-audit/report.html): Current human-readable public-evidence audit output.
+- [Contact / paid pilot](https://hirokimm.github.io/data-act-exit-audit/contact.html): Contact and non-binding paid-pilot inquiry route.
+
+## Trust and scope
+- [Privacy](https://hirokimm.github.io/data-act-exit-audit/privacy.html): Privacy and measurement information.
+- [Terms](https://hirokimm.github.io/data-act-exit-audit/terms.html): Terms and interpretation limits.
+- [Source repository](https://github.com/Hirokimm/data-act-exit-audit): Public scanner source, methodology and status artifacts.
+- [EU Data Act](https://eur-lex.europa.eu/eli/reg/2023/2854/oj): Primary regulation source.
+
+## What the audit looks for
+- Public switching and contract-termination evidence.
+- Data export and portability instructions.
+- Public API or open-interface evidence where observable.
+- Switching or exit-fee statements.
+- Public pre-contract information relevant to exit readiness.
+
+## Interpretation guardrails
+- Findings are limited to observable public evidence and can be PASS, REVIEW or UNKNOWN.
+- Missing public evidence does not prove legal non-compliance or the absence of private operational controls.
+- The audit does not provide legal advice, certification or a guarantee of EU Data Act compliance.
+
+Canonical site: https://hirokimm.github.io/data-act-exit-audit/
