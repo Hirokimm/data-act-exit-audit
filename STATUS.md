@@ -42,7 +42,9 @@ Two separate contamination classes have now been repaired:
 1. #003 monitoring previously had automation paths that could create unmarked `data_act_*` traffic. Browser QA now uses `?avf_synthetic=1` to suppress client emission, and direct workflow KPI probes use `x-avf-synthetic: 1`.
 2. A later shared-sink audit found that header-marked synthetic probes were correctly tagged `synthetic:true` in Runtime Logs but were still forwarded to Vercel Analytics without a discriminator. The shared sink now excludes `synthetic:true` records from Analytics entirely, with regression tests and green production verification on the repaired #002 lineage.
 
-Evidence rule: historical unmarked `data_act_*` from before the #003 monitoring repair is ineligible, and Analytics event counts from before the shared-sink synthetic-exclusion repair are also ineligible as standalone B05 evidence. Eligible evidence must occur after both repairs and be tied to a genuine production interaction. A retained unmarked Runtime Log `KPI` record remains the preferred proof; post-repair Analytics may corroborate but does not by itself justify PASS without objective real-interaction linkage.
+The shared sink now additionally assigns `evidenceVersion:2` **server-side** to every accepted #002/#003 record and carries that version into Analytics only for non-synthetic events. A client cannot choose or override the version. This gives #003 an objective shared-sink cutoff after the integrity repairs.
+
+Evidence rule: historical unmarked `data_act_*` from before the #003 monitoring repair is ineligible, and pre-repair/versionless shared-sink records or Analytics counts are also ineligible as standalone B05 evidence. Eligible #003 evidence must be tied to a genuine production interaction, carry server-assigned `evidenceVersion:2`, have no `synthetic:true` marker, and occur under the repaired #003 monitoring regime. A retained unmarked Runtime Log `KPI` record remains the preferred proof; versioned post-repair Analytics may corroborate but does not by itself prove a genuine human interaction.
 
 ## Other Stage B evidence
 
@@ -55,6 +57,6 @@ Evidence rule: historical unmarked `data_act_*` from before the #003 monitoring 
 
 ## Next priority
 
-Obtain retained/observable REAL `data_act_*` production evidence after both evidence-integrity repair cutoffs. Prefer `data_act_report_open`, `data_act_contact_open`, or `data_act_monetization_interest` and require the matching retained Runtime Log `KPI` record to have no `synthetic:true` marker. Do not PASS B05 from code, CORS, synthetic POST success, historical ambiguous traffic, pre-repair Analytics counts, or zero-valued Web Analytics alone.
+Obtain retained/observable REAL `data_act_*` production evidence under the repaired monitoring regime. Prefer `data_act_report_open`, `data_act_contact_open`, or `data_act_monetization_interest` and require the matching retained Runtime Log `KPI` record to contain server-assigned `evidenceVersion:2` and no `synthetic:true` marker. Do not PASS B05 from code, CORS, synthetic POST success, historical ambiguous traffic, pre-repair/versionless Analytics counts, or zero-valued Web Analytics alone.
 
 Continue qualified B2B acquisition and paid-pilot demand validation in parallel; do not confuse Stage B gate completion with commercial traction.
