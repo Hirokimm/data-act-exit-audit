@@ -5,30 +5,46 @@ This file is the repository-side handoff for AI Venture Factory #003. Business-s
 ## Production
 
 - Public URL: https://hirokimm.github.io/data-act-exit-audit/
-- Deployment: GitHub Pages via `.github/workflows/pages.yml`
+- Deployment: GitHub Pages via `.github/workflows/pages.yml`.
 - Deployment identity: `health.json` records commit SHA, workflow run ID, repository and service identifier.
 - Automated monitoring: scheduled every six hours; build/deploy/browser-QA failures create or refresh the repository alert issue.
-- Production workflow verifies the public paid-pilot GitHub Issue route, sign-in/public-disclosure copy, issue-template existence, mobile/desktop browser QA, and the privacy-safe KPI transport contract.
+- Production workflow verifies the public paid-pilot GitHub Issue route, sign-in/public-disclosure copy, issue-template existence, mobile/desktop browser QA, and the privacy-safe shared KPI transport contract.
 
-## Stage B technical evidence
+## Current Stage B position
 
-- B01/B04: production identity and critical-path HTTP checks are enforced in the Pages workflow.
-- B02/B03: live SaaS evidence scan and report generation run during every build.
-- B05 remains `未確認`: the static client now sends namespaced `data_act_page_view`, `data_act_report_open`, `data_act_contact_open`, and `data_act_monetization_interest` events to the Factory Vercel KPI endpoint. The application event payload is only the fixed event name, credentials are omitted, the CSP permits only the intended sink, and Privacy discloses the measurement. The shared endpoint forwards accepted events to Vercel Analytics. Synthetic transport success is not sufficient; retained/observable production event evidence is still required before PASS.
-- B06: production exposes a real non-binding paid-pilot lead route from the homepage/contact page to the repository `paid-pilot.md` issue template. No payment, revenue, conversion or provider approval is claimed.
-- B07/B08/B09: indexable acquisition surface, public trust pages and security/data-handling controls are deployed and tested.
-- B10: production browser QA is enforced on mobile and desktop Chromium.
-- B11: dedicated ChatGPT Project `03｜EU Data Act・SaaS切替/データ出口監査`, central ledger, and this repository provide durable canonical linkage.
-- B12: six-hour monitor and GitHub Issue alert path are verified.
+- Central ledger: **11/12 PASS**.
+- B01/B02/B03/B04/B06/B07/B08/B09/B10/B11/B12 are PASS.
+- B05 remains `未確認`: the static client sends namespaced `data_act_page_view`, `data_act_report_open`, `data_act_contact_open`, and `data_act_monetization_interest` events to the Factory Vercel KPI endpoint. The application event payload is only the fixed event name, credentials are omitted, CSP permits only the intended sink, and Privacy discloses the measurement. Transport/CORS and synthetic event acceptance are verified, but retained/observable REAL production-event evidence is still required before PASS.
+- B06 is PASS for a real non-binding paid-pilot lead route from homepage/contact to the repository `paid-pilot.md` issue template. It is not evidence of checkout, payment, revenue, conversion, pricing acceptance or willingness-to-pay.
 
-## Current verification note
+## B06 external red-team and remediation
 
-The first Public MVP run after wiring the shared KPI sink built and deployed the Pages artifact successfully but its post-deploy verification failed while the upstream #002 KPI CORS contract was still converging. That is an inter-service deployment race, not evidence of a scanner or Pages build failure. A later run must pass the CORS + namespaced-event production checks before this wiring is treated as verified.
+Claude API Issue #12 independently reviewed the route and initially returned `CONDITIONAL`. It agreed the literal Stage B lead-route threshold was met but identified two load-bearing gaps: prospective users were not clearly told before clicking that the inquiry becomes a public/indexable GitHub Issue requiring sign-in, and the CTA-to-template route had not been verified end-to-end.
 
-## Next build priorities
+HQ independently verified and remediated both findings:
+- homepage and contact copy now disclose before the CTA that GitHub sign-in is required and submitted issue content is public/may be indexed;
+- the issue template carries a matching Public submission notice;
+- CTA copy is `Open public paid-pilot inquiry`, avoiding an implication of immediate purchase/acceptance;
+- Public MVP run `34849946991` attempt 2 on exact production commit `8307545349533315173a6fa4ce0b4133a75c3851` completed build/deploy/browser-QA SUCCESS;
+- deploy job `103998412301` verified exact deployment identity, public disclosure copy, CTA HTTP 200 resolving for an anonymous user to GitHub login while preserving the original paid-pilot template return path, and the raw public template containing the required notice plus one-time/recurring options.
 
-1. Get a green Public MVP run with exact Pages deployment identity plus the shared KPI CORS/namespaced-event checks.
-2. Observe real retained production `data_act_*` events in Vercel Analytics for B05; do not PASS from code or synthetic smoke alone.
-3. Keep the paid-pilot lead route available while independently preparing hosted checkout options; do not regress B06 by replacing a working lead route with an unverified placeholder.
+Final HQ decision therefore keeps B06 PASS for **route existence only**.
 
-Never infer PASS from code presence alone. Record run/commit evidence in the central ledger and GitHub before changing a gate.
+## B05 shared KPI evidence
+
+The shared #002 KPI endpoint accepts the fixed namespaced #003 events only from exact origin `https://hirokimm.github.io`. Public MVP production verification has demonstrated CORS preflight HTTP 204 and namespaced synthetic POST HTTP 200. Later main `9b9d8c6f89d797701ed85fb279bec940ecfcc466` preserved this contract and successfully verified production deploy/transport. These checks establish transport reliability, not retained measurement; B05 stays `未確認` until durable real event visibility is observed.
+
+## Other Stage B evidence
+
+- B01/B04: exact deployment identity and critical-path HTTP checks.
+- B02/B03: live SaaS evidence scan and report generation during build.
+- B07/B08/B09: indexable acquisition surface, trust pages and security/data-handling controls.
+- B10: independent successful production mobile/desktop Chromium evidence remains authoritative.
+- B11: dedicated ChatGPT Project `03｜EU Data Act・SaaS切替/データ出口監査`, central ledger and this repository provide durable linkage.
+- B12: six-hour monitor and verified GitHub Issue alert path.
+
+## Next priority
+
+Obtain retained/observable REAL `data_act_*` production events in the shared Vercel Analytics sink. This HUMAN_ACCELERATOR is intentionally deduplicated with #002: one Analytics check can potentially close B05 for both ventures. Do not PASS B05 from code, CORS or synthetic POST success alone.
+
+Continue qualified B2B acquisition and paid-pilot demand validation in parallel; do not confuse Stage B gate completion with commercial traction.
