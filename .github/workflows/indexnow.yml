@@ -1,0 +1,53 @@
+name: IndexNow discovery
+
+on:
+  workflow_run:
+    workflows: ["Public MVP"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BASE_URL: https://hirokimm.github.io/data-act-exit-audit/
+      INDEXNOW_KEY: 231c6b1f3238e12b018cff5e4495530e
+    steps:
+      - name: Verify production key and sitemap
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 12); do
+            key="$(curl --silent --show-error --location --max-time 15 "${BASE_URL}${INDEXNOW_KEY}.txt" || true)"
+            if [ "$key" = "$INDEXNOW_KEY" ] && curl --fail --silent --show-error --location --max-time 20 "${BASE_URL}sitemap.xml" -o sitemap.xml; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Production did not expose the IndexNow key+sitemap in time" >&2
+          exit 1
+      - name: Build and submit IndexNow payload
+        run: |
+          python3 - <<'PY'
+          import json, os, xml.etree.ElementTree as ET
+          base=os.environ['BASE_URL']; key=os.environ['INDEXNOW_KEY']
+          root=ET.parse('sitemap.xml').getroot()
+          urls=[]
+          for el in root.iter():
+              if el.tag.endswith('loc') and el.text:
+                  u=el.text.strip()
+                  if u.startswith(base): urls.append(u)
+          urls=list(dict.fromkeys(urls))[:100]
+          if not urls: raise SystemExit('No same-host sitemap URLs found')
+          payload={'host':'hirokimm.github.io','key':key,'keyLocation':f'{base}{key}.txt','urlList':urls}
+          open('indexnow.json','w').write(json.dumps(payload,separators=(',',':')))
+          print(f'prepared {len(urls)} URLs')
+          PY
+          code="$(curl --silent --show-error --output response.txt --write-out '%{http_code}' --request POST 'https://api.indexnow.org/indexnow' --header 'Content-Type: application/json; charset=utf-8' --data-binary @indexnow.json)"
+          echo "IndexNow HTTP ${code}"
+          cat response.txt || true
+          test "$code" = "200" -o "$code" = "202"
