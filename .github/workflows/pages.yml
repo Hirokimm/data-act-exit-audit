@@ -33,6 +33,11 @@ jobs:
           test -f public/privacy.html
           test -f public/terms.html
           test -f public/contact.html
+          test -f .github/ISSUE_TEMPLATE/paid-pilot.md
+          grep -q 'Request a paid pilot' public/index.html
+          grep -q 'template=paid-pilot.md' public/index.html
+          grep -q 'monetization_interest' public/index.html
+          grep -q 'monetization_interest' public/kpi.js
       - name: Generate fresh public evidence
         run: |
           python3 scan.py --targets targets.json --out results.json
@@ -99,7 +104,12 @@ jobs:
             echo "${path:-index.html}: HTTP ${code}"
             test "${code}" = "200"
           done
-          grep -q 'SaaS Exit Evidence Audit' <(curl --fail --silent --location "${BASE_URL}")
+          curl --fail --silent --location "${BASE_URL}" -o /tmp/home.html
+          curl --fail --silent --location "${BASE_URL}contact.html" -o /tmp/contact.html
+          grep -q 'SaaS Exit Evidence Audit' /tmp/home.html
+          grep -q 'Request a paid pilot' /tmp/home.html
+          grep -q 'template=paid-pilot.md' /tmp/home.html
+          grep -q 'Request a paid pilot' /tmp/contact.html
           grep -q 'UNKNOWN' <(curl --fail --silent --location "${BASE_URL}report.html")
 
   browser-qa:
