@@ -47,6 +47,7 @@ jobs:
           grep -q 'data_act_monetization_interest' public/kpi.js
           grep -q 'https://ai-search-audit-dun.vercel.app/api/kpi' public/kpi.js
           grep -q "credentials:'omit'" public/kpi.js
+          grep -q "avf_synthetic" public/kpi.js
           ! grep -Eq 'JSON.stringify\(\{[^}]*(path|query|url)' public/kpi.js
           grep -q "connect-src 'self' https://ai-search-audit-dun.vercel.app" public/index.html
           grep -q 'fixed event names' public/privacy.html
@@ -149,6 +150,7 @@ jobs:
           grep -q 'public GitHub Issue' /tmp/contact.html
           grep -q 'fixed event names' /tmp/privacy.html
           grep -q 'data_act_page_view' /tmp/kpi.js
+          grep -q 'avf_synthetic' /tmp/kpi.js
           grep -q 'UNKNOWN' <(curl --fail --silent --location "${BASE_URL}report.html")
 
           cta_meta="$(curl --silent --show-error --location --max-time 20 -o /tmp/cta-body -w '%{http_code}|%{url_effective}' "$CTA_URL")"
@@ -170,6 +172,7 @@ jobs:
           # The shared Vercel sink can converge independently of Pages. Retry the
           # complete CORS + event contract so inter-service propagation is not a
           # false outage while still requiring objective production evidence.
+          # This direct probe is synthetic and must never be eligible B05 evidence.
           kpi_ok=false
           for attempt in $(seq 1 12); do
             cors_headers="$(mktemp)"
@@ -178,7 +181,7 @@ jobs:
               -H 'Access-Control-Request-Headers: content-type' "${KPI_URL}" || true)"
             event_body="$(mktemp)"
             event_code="$(curl --silent --show-error --max-time 20 -o "$event_body" -w '%{http_code}' \
-              -H "Origin: ${KPI_ORIGIN}" -H 'content-type: application/json' \
+              -H "Origin: ${KPI_ORIGIN}" -H 'content-type: application/json' -H 'x-avf-synthetic: 1' \
               -d '{"event":"data_act_page_view"}' "${KPI_URL}" || true)"
             echo "KPI contract attempt $attempt/12: preflight=${preflight_code} event=${event_code}"
             if [[ "$preflight_code" == "204" ]] && \
@@ -190,7 +193,7 @@ jobs:
             sleep 10
           done
           test "$kpi_ok" = true
-          echo 'Production Pages identity and shared KPI transport contract verified.'
+          echo 'Production Pages identity and shared KPI transport contract verified with synthetic probe marking.'
 
   browser-qa:
     if: github.ref == 'refs/heads/main'
@@ -202,11 +205,12 @@ jobs:
     steps:
       - name: Install Lighthouse browser QA
         run: npm install --global lighthouse@12
-      - name: Render production in mobile and desktop Chromium
+      - name: Render production in mobile and desktop Chromium without polluting real KPI evidence
         run: |
           set -euo pipefail
-          lighthouse "${BASE_URL}" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=mobile.json
-          lighthouse "${BASE_URL}" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=desktop.json
+          QA_URL="${BASE_URL}?avf_synthetic=1"
+          lighthouse "${QA_URL}" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=mobile.json
+          lighthouse "${QA_URL}" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=desktop.json
       - name: Assert browser usability and primary navigation
         run: |
           set -euo pipefail
