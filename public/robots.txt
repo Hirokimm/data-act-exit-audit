@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://hirokimm.github.io/data-act-exit-audit/sitemap.xml
