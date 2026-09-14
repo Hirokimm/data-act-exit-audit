@@ -1,6 +1,6 @@
 # Monetization — canonical state
 
-Last verified: 2026-09-15 06:10+ JST
+Last verified: 2026-09-15 06:17+ JST
 
 ## B06 status
 
@@ -20,19 +20,19 @@ Last verified: 2026-09-15 06:10+ JST
 
 Primary remains recurring monitoring; one-time audit remains an independent offer path. Checkout remains contingent on qualified interest rather than being added as empty UI.
 
-## Current production evidence — refreshed 2026-09-15 06:10+ JST
+## Current production evidence — refreshed 2026-09-15 06:17+ JST
 
 - Offer-specific public templates remain present for recurring monitoring and one-time audit inquiries and retain explicit public/sign-in/non-confidential/non-binding disclosures.
 - `public/contact.html` routes the two CTAs to the matching templates while retaining privacy-safe `offerType=monitoring|one_time` interest instrumentation.
 - The monetization implementation itself was previously verified on product head `cd1c14fba48ee84be02e799fe9fc4cfd6c6e3739` with Public MVP run `34881885725` **SUCCESS**.
-- The last fully verified canonical head before this documentation refresh was `6c45b077ca37f272ee3142788b34a177622f6609`, with Public MVP `34890723259` **SUCCESS** and IndexNow `34890906219` **SUCCESS** in the central ledger. Documentation-only commits created in this run must be re-verified before being used as production lineage evidence.
-- The checked public Issue surface still has no verified user-created paid-pilot inquiry. This is not proof of zero demand.
+- Checkout-fallback documentation head `095449f7d8c63d2da9f4ef3bf6cbd91b3fe12696` completed Public MVP run `34897776064` **SUCCESS**. This verifies the then-current main across the repository's build/deploy/production/browser checks after the route-diversification update. This current file is a documentation-only follow-up to record that result; it does not claim a new checkout or product behavior.
+- Fresh public Issue inspection still shows only owner-created status/monitoring issues #1–#4 and no verified user-created paid-pilot inquiry in the checked issue surface. This is not proof of zero demand.
 - Fresh Gmail review found no Stripe/Lemon Squeezy/Paddle or affiliate/payment activation message attributable to #003.
-- External-AI queue contains no newly completed monetization result that changes B06; the #003 launch-readiness red-team task is queued, not a result.
+- External-AI queue contains no newly completed monetization result that changes B06; the #003 launch-readiness red-team task remains queued, not a result.
 
 ## Checkout fallback evidence
 
-`PAYMENT_READINESS.md` now records four factual alternatives and an explicit activation rule without inventing a price or account state.
+`PAYMENT_READINESS.md` records four factual alternatives and an explicit activation rule without inventing a price or account state.
 
 - **Stripe Payment Links:** first direct-checkout candidate after qualified interest. Japan pricing currently starts at 3.6% per successful card charge; Payment Links supports one-time and recurring payment links. Actual account/onboarding state is unverified.
 - **Lemon Squeezy:** first independent MoR fallback. Current published base ecommerce pricing is 5% + $0.50 per transaction, with possible additional fees; it states that it handles sales-tax/VAT collection and filing as Merchant of Record. Eligibility/account approval is unverified.
@@ -63,4 +63,4 @@ Official evidence:
 2. Keep both offer-specific inquiry routes live while evidence is insufficient to eliminate either.
 3. If qualified interest appears, first reduce GitHub sign-in/public-issue friction with a hosted lead route, define evidence-based scope/price, then verify direct Stripe versus at least two independent MoR providers in the actual provider-account context.
 4. If meaningful qualified traffic produces no paid-pilot interest, revisit positioning/offer before adding payment complexity.
-5. Re-verify the newest documentation head in production before updating the central B06 evidence lineage.
+5. Keep checkout-provider evidence current without mistaking provider documentation or CI success for demand, payment activation or revenue.
