@@ -1,0 +1,1 @@
+(()=>{const allowed=new Set(['report_open','contact_open']);document.documentElement.dataset.kpi='ready';document.addEventListener('click',e=>{const a=e.target.closest('[data-kpi]');if(!a)return;const name=a.getAttribute('data-kpi');if(!allowed.has(name))return;window.dispatchEvent(new CustomEvent('venture-kpi',{detail:{name,path:location.pathname}}));});})();
