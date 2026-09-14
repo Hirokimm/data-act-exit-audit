@@ -2,7 +2,7 @@
 
 Public technical-evidence audit for **EU Data Act SaaS switching and data portability**. This is AI Venture Factory venture #003.
 
-**Live audit:** https://hirokimm.github.io/data-act-exit-audit/
+**Live audit:** https://hirokimm.github.io/data-act-exit-audit/?utm_source=github&utm_medium=referral&utm_campaign=repo-readme
 
 ## What it checks
 
@@ -34,8 +34,8 @@ EU Data Act switching obligations create practical questions around SaaS data ex
 
 ## Try it
 
-Open the live report and evidence pages at:
-
-https://hirokimm.github.io/data-act-exit-audit/
+- [Open the live audit](https://hirokimm.github.io/data-act-exit-audit/?utm_source=github&utm_medium=referral&utm_campaign=repo-readme)
+- [Read the current report](https://hirokimm.github.io/data-act-exit-audit/report.html?utm_source=github&utm_medium=referral&utm_campaign=repo-readme-report)
+- [Inspect machine-readable results](https://hirokimm.github.io/data-act-exit-audit/results.json?utm_source=github&utm_medium=referral&utm_campaign=repo-readme-results)
 
 For a paid-pilot request, use the clearly disclosed contact route on the live site. Submissions through GitHub require sign-in and may be public/indexable, as disclosed before the link.
