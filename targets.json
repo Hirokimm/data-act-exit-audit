@@ -1,0 +1,12 @@
+[
+  {"name":"Slack","domain":"slack.com","seeds":["https://slack.com/terms-of-service","https://slack.com/help/categories/360000049043","https://api.slack.com/"]},
+  {"name":"Notion","domains":["notion.com","notion.so"],"seeds":["https://www.notion.com/terms","https://www.notion.com/help/export-your-content","https://developers.notion.com/"]},
+  {"name":"Atlassian","domain":"atlassian.com","seeds":["https://www.atlassian.com/legal/cloud-terms-of-service","https://support.atlassian.com/security-and-access-policies/docs/export-data-from-your-organization/","https://developer.atlassian.com/"]},
+  {"name":"HubSpot","domain":"hubspot.com","seeds":["https://legal.hubspot.com/terms-of-service","https://knowledge.hubspot.com/import-and-export","https://developers.hubspot.com/"]},
+  {"name":"Salesforce","domain":"salesforce.com","seeds":["https://www.salesforce.com/company/legal/agreements/","https://help.salesforce.com/s/articleView?id=platform.admin_exportdata.htm&type=5","https://developer.salesforce.com/"]},
+  {"name":"Zendesk","domain":"zendesk.com","seeds":["https://www.zendesk.com/company/agreements-and-terms/","https://support.zendesk.com/hc/en-us/articles/4408886165402","https://developer.zendesk.com/"]},
+  {"name":"Dropbox","domain":"dropbox.com","seeds":["https://www.dropbox.com/terms","https://help.dropbox.com/share/download-entire-folders","https://www.dropbox.com/developers"]},
+  {"name":"Box","domain":"box.com","seeds":["https://www.box.com/legal/termsofservice","https://support.box.com/hc/en-us/articles/360043697314","https://developer.box.com/"]},
+  {"name":"Asana","domain":"asana.com","seeds":["https://asana.com/terms","https://help.asana.com/s/article/export-your-data","https://developers.asana.com/"]},
+  {"name":"Miro","domain":"miro.com","seeds":["https://miro.com/legal/terms-of-service/","https://help.miro.com/hc/en-us/articles/360018350399","https://developers.miro.com/"]}
+]
