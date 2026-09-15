@@ -63,6 +63,8 @@ The shared sink assigns `evidenceVersion:2` **server-side** to every accepted #0
 
 Evidence rule: historical unmarked `data_act_*` from before the monitoring repair is ineligible, and pre-repair/versionless shared-sink records or Analytics counts are also ineligible as standalone B05 evidence. Eligible #003 evidence must be tied to a genuine production interaction, carry server-assigned `evidenceVersion:2`, have no `synthetic:true` marker, and occur under the repaired #003 monitoring regime. A retained unmarked Runtime Log `KPI` record remains the preferred proof.
 
+2026-09-15 canonical repair: central Stage B B05 had accidentally been overwritten with Growth/B07 GitHub-discovery text. The ledger was restored to this criterion-correct measurement evidence. The gate remains `未確認`; no PASS was inferred from transport/code/synthetic evidence.
+
 ## Other Stage B evidence
 
 - B01/B04: exact deployment identity and critical-path HTTP checks.
@@ -70,7 +72,7 @@ Evidence rule: historical unmarked `data_act_*` from before the monitoring repai
 - B07/B08/B09: indexable acquisition surface, trust pages and security/data-handling controls.
 - B10: successful production mobile/desktop Chromium evidence remains authoritative; this is browser-emulated evidence, not a physical-device claim.
 - B11: dedicated ChatGPT Project `03｜EU Data Act・SaaS切替/データ出口監査`, central ledger and this repository provide durable linkage.
-- B12: six-hour repo monitor and verified GitHub Issue alert path; synthetic monitoring is isolated from B05 evidence. The separate Factory-HQ health monitor remains `REPAIRED_PENDING_VERIFY` until its own post-repair run succeeds.
+- B12: six-hour repo monitor and verified GitHub Issue alert path; synthetic monitoring is isolated from B05 evidence. The separate Factory-HQ health monitor repair is now objectively verified by post-repair scheduled run `34901291120` SUCCESS; Factory Issue #16 is closed completed. There is no current B12 blocker.
 
 ## Next priority
 
