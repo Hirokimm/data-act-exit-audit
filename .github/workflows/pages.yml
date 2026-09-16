@@ -33,6 +33,7 @@ jobs:
           test -f public/privacy.html
           test -f public/terms.html
           test -f public/contact.html
+          test -f public/004/index.html
           test -f .github/ISSUE_TEMPLATE/paid-pilot.md
           grep -q 'Open public paid-pilot inquiry' public/index.html
           grep -q 'template=paid-pilot.md' public/index.html
@@ -54,6 +55,14 @@ jobs:
           grep -q 'Recommended next actions' render_report.py
           grep -q 'View source evidence and scanner detail' render_report.py
           grep -q 'How to use this report:' render_report.py
+          grep -q 'Stage A public preview' public/004/index.html
+          grep -q 'A Foundation + Record' public/004/index.html
+          grep -q 'B Role-context + Record' public/004/index.html
+          grep -q 'C Record-only' public/004/index.html
+          grep -q 'GitHubアカウントへのサインインが必要' public/004/index.html
+          grep -q '公開GitHub Issue' public/004/index.html
+          grep -q 'no.*negative-demand evidence' public/004/index.html
+          grep -q 'data-act-exit-audit/issues/new?title=' public/004/index.html
       - name: Generate fresh public evidence
         run: |
           python3 scan.py --targets targets.json --out results.json
@@ -136,7 +145,7 @@ jobs:
           done
           test "$identity_ok" = true
 
-          for path in '' report.html privacy.html terms.html contact.html results.json robots.txt sitemap.xml kpi.js; do
+          for path in '' report.html privacy.html terms.html contact.html results.json robots.txt sitemap.xml kpi.js 004/ 004/index.html; do
             code="$(curl --silent --show-error --location --max-time 20 -o /tmp/body -w '%{http_code}' "${BASE_URL}${path}")"
             echo "${path:-index.html}: HTTP ${code}"
             test "${code}" = "200"
@@ -146,6 +155,7 @@ jobs:
           curl --fail --silent --location "${BASE_URL}contact.html" -o /tmp/contact.html
           curl --fail --silent --location "${BASE_URL}privacy.html" -o /tmp/privacy.html
           curl --fail --silent --location "${BASE_URL}kpi.js" -o /tmp/kpi.js
+          curl --fail --silent --location "${BASE_URL}004/" -o /tmp/004.html
           grep -q 'SaaS Exit Evidence Audit' /tmp/home.html
           grep -q 'Open public paid-pilot inquiry' /tmp/home.html
           grep -q 'template=paid-pilot.md' /tmp/home.html
@@ -159,6 +169,13 @@ jobs:
           grep -q 'How to use this report:' /tmp/report.html
           grep -q 'Recommended next actions' /tmp/report.html
           grep -q 'View source evidence and scanner detail' /tmp/report.html
+          grep -q 'Stage A public preview' /tmp/004.html
+          grep -q 'A Foundation + Record' /tmp/004.html
+          grep -q 'B Role-context + Record' /tmp/004.html
+          grep -q 'C Record-only' /tmp/004.html
+          grep -q 'GitHubアカウントへのサインインが必要' /tmp/004.html
+          grep -q '公開GitHub Issue' /tmp/004.html
+          grep -q 'data-act-exit-audit/issues/new?title=' /tmp/004.html
 
           cta_meta="$(curl --silent --show-error --location --max-time 20 -o /tmp/cta-body -w '%{http_code}|%{url_effective}' "$CTA_URL")"
           IFS='|' read -r cta_code cta_effective <<< "$cta_meta"
@@ -196,7 +213,7 @@ jobs:
             sleep 10
           done
           test "$kpi_ok" = true
-          echo 'Production Pages identity, decision-ready report structure, and shared KPI transport contract verified.'
+          echo 'Production Pages identity, #004 preview surface, decision-ready report structure, and shared KPI transport contract verified.'
 
   browser-qa:
     if: github.ref == 'refs/heads/main'
@@ -214,12 +231,15 @@ jobs:
           QA_URL="${BASE_URL}?avf_synthetic=1"
           lighthouse "${QA_URL}" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=mobile.json
           lighthouse "${QA_URL}" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=desktop.json
+          lighthouse "${BASE_URL}004/?v=A&avf_synthetic=1" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=004-a-mobile.json
+          lighthouse "${BASE_URL}004/?v=B&avf_synthetic=1" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=004-b-desktop.json
+          lighthouse "${BASE_URL}004/?v=C&avf_synthetic=1" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=004-c-desktop.json
       - name: Assert browser usability and primary navigation
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs = require('fs');
-          for (const file of ['mobile.json', 'desktop.json']) {
+          for (const file of ['mobile.json', 'desktop.json', '004-a-mobile.json', '004-b-desktop.json', '004-c-desktop.json']) {
             const r = JSON.parse(fs.readFileSync(file, 'utf8'));
             if (r.runtimeError) throw new Error(`${file}: ${JSON.stringify(r.runtimeError)}`);
             const cats = r.categories || {};
@@ -232,7 +252,7 @@ jobs:
             }
           }
           NODE
-          for path in report.html results.json contact.html; do
+          for path in report.html results.json contact.html 004/; do
             code="$(curl --silent --show-error --location --max-time 20 -o /tmp/body -w '%{http_code}' "${BASE_URL}${path}")"
             echo "browser QA navigation ${path}: HTTP ${code}"
             test "${code}" = "200"
