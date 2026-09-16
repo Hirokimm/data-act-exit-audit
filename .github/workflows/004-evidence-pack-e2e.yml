@@ -1,0 +1,130 @@
+name: '#004 Evidence Pack E2E'
+
+on:
+  pull_request:
+    paths:
+      - 'public/004/**'
+      - '.github/workflows/004-evidence-pack-e2e.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'public/004/**'
+      - '.github/workflows/004-evidence-pack-e2e.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-pack-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Chromium automation
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Select exact test surface
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            ok=false
+            for attempt in $(seq 1 24); do
+              if curl --fail --silent --show-error --location --max-time 20 \
+                https://hirokimm.github.io/data-act-exit-audit/health.json -o /tmp/health.json; then
+                if python3 - <<'PY'
+          import json, os
+          d=json.load(open('/tmp/health.json'))
+          raise SystemExit(0 if d.get('commit') == os.environ['EXPECTED_SHA'] else 1)
+          PY
+                then
+                  ok=true
+                  break
+                fi
+              fi
+              echo "Waiting for exact production SHA ($attempt/24)..."
+              sleep 10
+            done
+            test "$ok" = true
+            echo 'BASE_URL=https://hirokimm.github.io/data-act-exit-audit/004/' >> "$GITHUB_ENV"
+          else
+            python3 -m http.server 8080 --directory public >/tmp/004-http.log 2>&1 &
+            echo $! >/tmp/004-http.pid
+            for attempt in $(seq 1 20); do
+              if curl --fail --silent http://127.0.0.1:8080/004/ >/dev/null; then break; fi
+              sleep 1
+            done
+            echo 'BASE_URL=http://127.0.0.1:8080/004/' >> "$GITHUB_ENV"
+          fi
+      - name: Exercise generation and JSON/CSV downloads in Chromium
+        run: |
+          cat > /tmp/004-e2e.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs/promises';
+          import path from 'node:path';
+          import os from 'node:os';
+
+          const base = process.env.BASE_URL;
+          if (!base) throw new Error('BASE_URL missing');
+          const browser = await chromium.launch({headless: true});
+          const page = await browser.newPage({acceptDownloads: true});
+          await page.goto(`${base}?v=B&avf_synthetic=1`, {waitUntil: 'networkidle'});
+
+          await page.fill('#audience', 'Procurement team');
+          await page.fill('#completedAt', '2026-09-17');
+          await page.fill('#context', 'EU-facing vendor selection using generative AI');
+          await page.fill('#topics', 'AI limitations, output verification, confidentiality, human oversight');
+          await page.fill('#sources', 'European Commission Article 4 guidance — checked 2026-09-17');
+          await page.fill('#updateLog', '2026-09-17 representative Stage A E2E');
+          await page.click('#generate');
+
+          const preview = await page.locator('#packPreview').textContent();
+          if (!preview?.includes('avf-004-evidence-pack-v1')) throw new Error('schema missing from preview');
+          if (!preview.includes('Procurement team')) throw new Error('audience missing from preview');
+          if (await page.locator('#downloadJson').isDisabled()) throw new Error('JSON download stayed disabled');
+          if (await page.locator('#downloadCsv').isDisabled()) throw new Error('CSV download stayed disabled');
+
+          const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'avf004-'));
+          const [jsonDownload] = await Promise.all([
+            page.waitForEvent('download'),
+            page.click('#downloadJson'),
+          ]);
+          const jsonPath = path.join(dir, jsonDownload.suggestedFilename());
+          await jsonDownload.saveAs(jsonPath);
+          const pack = JSON.parse(await fs.readFile(jsonPath, 'utf8'));
+          if (pack.schema !== 'avf-004-evidence-pack-v1') throw new Error('JSON schema mismatch');
+          if (pack.variant !== 'B') throw new Error('JSON variant mismatch');
+          if (pack.record?.audience !== 'Procurement team') throw new Error('JSON audience mismatch');
+          if (pack.record?.completedAt !== '2026-09-17') throw new Error('JSON date mismatch');
+          if (!Array.isArray(pack.limitations) || pack.limitations.length < 4) throw new Error('JSON limitations missing');
+
+          const [csvDownload] = await Promise.all([
+            page.waitForEvent('download'),
+            page.click('#downloadCsv'),
+          ]);
+          const csvPath = path.join(dir, csvDownload.suggestedFilename());
+          await csvDownload.saveAs(csvPath);
+          const csv = await fs.readFile(csvPath, 'utf8');
+          if (!csv.includes('"schema","variant","generatedAt","audience"')) throw new Error('CSV header mismatch');
+          if (!csv.includes('"avf-004-evidence-pack-v1","B"')) throw new Error('CSV schema/variant missing');
+          if (!csv.includes('"Procurement team"')) throw new Error('CSV audience missing');
+          if (!csv.includes('"2026-09-17"')) throw new Error('CSV date missing');
+
+          console.log(JSON.stringify({
+            surface: base,
+            variant: pack.variant,
+            schema: pack.schema,
+            json: jsonDownload.suggestedFilename(),
+            csv: csvDownload.suggestedFilename(),
+            result: 'PASS'
+          }));
+          await browser.close();
+          JS
+          node /tmp/004-e2e.mjs
