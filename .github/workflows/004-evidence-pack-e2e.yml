@@ -65,7 +65,7 @@ jobs:
           fi
       - name: Exercise generation and JSON/CSV downloads in Chromium
         run: |
-          cat > /tmp/004-e2e.mjs <<'JS'
+          cat > 004-e2e.mjs <<'JS'
           import { chromium } from 'playwright';
           import fs from 'node:fs/promises';
           import path from 'node:path';
@@ -127,4 +127,4 @@ jobs:
           }));
           await browser.close();
           JS
-          node /tmp/004-e2e.mjs
+          node 004-e2e.mjs
