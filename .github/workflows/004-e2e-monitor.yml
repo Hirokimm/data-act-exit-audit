@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      PRODUCT_URL: https://hirokimm.github.io/data-act-exit-audit/004/?v=B
+      PRODUCT_URL: https://hirokimm.github.io/data-act-exit-audit/004/?v=B&avf_synthetic=1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
