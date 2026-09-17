@@ -3,23 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EU AI Act Article 4 Evidence Pack — Stage A preview</title>
+  <title>AI研修の実施記録を、あとから説明できる形に｜#004 Stage A preview</title>
   <style>
-    body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 18px;line-height:1.65}
-    nav{display:flex;gap:12px;flex-wrap:wrap}.card{border:1px solid #bbb;border-radius:12px;padding:22px;margin:20px 0}.muted{color:#555}
-    .cta,button{display:inline-block;padding:11px 16px;border:1px solid #111;border-radius:8px;text-decoration:none;background:#fff;color:#111;cursor:pointer}
-    label{display:block;font-weight:600;margin-top:12px}input,textarea{box-sizing:border-box;width:100%;padding:9px;margin-top:4px;font:inherit}textarea{min-height:76px}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.preview{white-space:pre-wrap;background:#f6f6f6;padding:14px;border-radius:8px;overflow:auto}
-    @media(max-width:520px){body{margin:20px auto}.card{padding:16px}nav,.actions{display:grid;gap:6px}}
+    body{font-family:system-ui,sans-serif;max-width:800px;margin:40px auto;padding:0 18px;line-height:1.65;color:#181818}nav{display:flex;gap:12px;flex-wrap:wrap}.card{border:1px solid #bbb;border-radius:12px;padding:22px;margin:20px 0}.muted{color:#555}.hero-note{font-size:1.08rem}.cta,button{display:inline-block;padding:11px 16px;border:1px solid #111;border-radius:8px;text-decoration:none;background:#fff;color:#111;cursor:pointer}label{display:block;font-weight:600;margin-top:12px}input,textarea{box-sizing:border-box;width:100%;padding:9px;margin-top:4px;font:inherit}textarea{min-height:76px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.preview{white-space:pre-wrap;background:#f6f6f6;padding:14px;border-radius:8px;overflow:auto}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.steps div{background:#f7f7f7;border-radius:10px;padding:13px}.eyebrow{font-weight:700;color:#555;font-size:.88rem}@media(max-width:520px){body{margin:20px auto}.card{padding:16px}nav,.actions,.steps{display:grid;grid-template-columns:1fr;gap:8px}}
   </style>
 </head>
 <body>
   <p class="muted"><strong>Stage A public preview</strong> / 需要検証用MVP / 法的助言・認証・適合保証ではありません</p>
-  <h1 id="title"></h1><p id="lead"></p>
-  <nav aria-label="Offer variants"><a href="?v=A">A Foundation + Record</a><a href="?v=B">B Role-context + Record</a><a href="?v=C">C Record-only</a></nav>
-  <section class="card"><h2>含まれるもの</h2><ul id="items"></ul></section>
+  <p class="eyebrow">EU向けにAIを使う日本企業の、研修・教育記録づくり</p>
+  <h1 id="title"></h1><p id="lead" class="hero-note"></p>
+  <section class="card"><h2>何ができる？</h2><div class="steps"><div><strong>1. 実施内容を入力</strong><br><span class="muted">対象部門、日時、AI利用場面、扱った内容、公式source。</span></div><div><strong>2. 記録を生成</strong><br><span class="muted">組織単位のEvidence Packとして整理。</span></div><div><strong>3. 保存・更新</strong><br><span class="muted">JSON / CSVで残し、公式情報の更新時に見直せます。</span></div></div><p class="muted">個人名・従業員IDは不要です。このツールは「研修をした事実と何を扱ったか」を整理するもので、法令適合や理解度を証明するものではありません。</p></section>
+  <nav aria-label="Offer variants"><a href="?v=A">A: 基礎研修＋記録</a><a href="?v=B">B: 部門・用途別研修＋記録</a><a href="?v=C">C: 既存研修の記録だけ</a></nav>
+  <section class="card"><h2>このプランに含まれるもの</h2><ul id="items"></ul></section>
   <section class="card" id="builder">
-    <h2>Evidence Packを作る</h2>
+    <h2>実施記録を作る</h2>
     <p>個人名や従業員IDを入力せず、組織単位の実施記録をローカルで作成します。入力内容はこのページからサーバーへ送信しません。</p>
     <label>対象グループ / 部門<input id="audience" placeholder="例: Procurement team"></label>
     <label>実施日時<input id="completedAt" type="date"></label>
@@ -27,22 +24,22 @@
     <label>扱った内容<textarea id="topics" placeholder="例: AIの限界、出力検証、機密情報の扱い、human oversight"></textarea></label>
     <label>参照した公式source<textarea id="sources" placeholder="例: European Commission AI Act FAQ / Article 4 guidance URLと確認日"></textarea></label>
     <label>更新メモ<textarea id="updateLog" placeholder="例: 2026-09-17 初版。公式source更新時に再確認"></textarea></label>
-    <div class="actions"><button id="generate" type="button">Packを生成</button><button id="downloadJson" type="button" disabled>JSONを保存</button><button id="downloadCsv" type="button" disabled>CSVを保存</button></div>
+    <div class="actions"><button id="generate" type="button">実施記録を生成</button><button id="downloadJson" type="button" disabled>JSONを保存</button><button id="downloadCsv" type="button" disabled>CSVを保存</button></div>
     <h3>生成プレビュー</h3><div id="packPreview" class="preview" aria-live="polite">未生成</div>
     <p class="muted">生成物は実施記録の整理用です。法的適合、受講完了、理解度、認証を証明するものではありません。必要な保持期間・承認者・追加証拠は各社の方針と専門家確認に合わせてください。</p>
   </section>
   <section class="card">
-    <h2>Paid pilot</h2>
-    <p>このworkflowを自社で試したい担当者向けに、価格受容性を含むpilot相談を受け付けます。申込みではなく相談であり、契約は発生しません。</p>
+    <h2>自社向けに試したい企業担当者へ</h2>
+    <p>この記録workflowを自社のAI研修・AI governance運用に合わせて試すpaid pilotを相談できます。申込みではなく相談で、ここから契約や課金は発生しません。</p>
     <p class="muted"><strong>送信にはGitHubアカウントへのサインインが必要です。</strong> 相談内容は公開GitHub Issueになります。個人情報・機密情報・従業員情報は入力しないでください。需要検証で有効な回答として扱うため、日本企業での担当領域とEU向けAI利用/AI governance・training・procurementとの関係を、機密情報を含めず記載してください。Paid pilotへの回答が <code>yes</code> / <code>maybe</code>、または価格・scope・pilot条件・procurement・budgetの具体相談を含む場合のみpositive-interestとして扱います。ただし <code>no</code> を明示した回答は常にnegative-demand evidenceとして別集計し、需要PASSには数えません。</p>
-    <a class="cta" id="cta" rel="nofollow">pilot相談を送る</a>
+    <a class="cta" id="cta" rel="nofollow">pilotを相談する</a>
   </section>
-  <h2>重要な前提</h2><p class="muted">本MVPはEU AI Act Article 4への法的適合を判定・保証するものではありません。内容は公式sourceの更新に応じて見直す必要があります。個人・従業員・機密・sensitive情報は入力しないでください。</p>
+  <h2>なぜEU AI Act Article 4が関係する？</h2><p class="muted">EU向けにAIを利用する企業では、役割や利用状況に応じたAI literacyを考える必要があります。本MVPは、その教育・研修を実施した際の記録整理を助ける技術ツールです。Article 4への法的適合を判定・保証するものではありません。内容は公式sourceの更新に応じて見直す必要があります。個人・従業員・機密・sensitive情報は入力しないでください。</p>
   <script>
     const variants={
-      A:{title:'全社員向けAI literacy + Evidence record',lead:'短時間のfoundation教材と、実施した事実を残す記録workflow。',items:['全社員向けfoundation module','対象グループ・日時・内容のrecord','公式source / update log']},
-      B:{title:'役割・利用context別AI literacy + Evidence record',lead:'部署やAI利用contextに合わせた短時間moduleと、説明可能な記録workflow。',items:['role/context別module','対象グループ・日時・内容のrecord','公式source / update log']},
-      C:{title:'既存研修をEvidence Pack化するRecord-only kit',lead:'教材を置き換えず、既存の教育施策を追跡可能なrecordへ整理。',items:['既存研修のrecord template','対象グループ・日時・内容のrecord','公式source / update log']}
+      A:{title:'AI研修を実施した記録を、あとから説明できる形に。',lead:'全社員向けの短い基礎研修と「誰に・いつ・何を扱ったか」の組織記録をセットで残す案です。',items:['全社員向けfoundation module','対象グループ・日時・内容のrecord','公式source / update log']},
+      B:{title:'部門やAIの使い方に合わせて、研修内容と実施記録を残す。',lead:'調達・営業・開発など、役割やAI利用場面に合わせた短時間moduleと、その実施記録をまとめる案です。',items:['role/context別module','対象グループ・日時・内容のrecord','公式source / update log']},
+      C:{title:'今あるAI研修を変えずに、実施記録だけ整える。',lead:'教材はそのまま使い、既存の教育施策を追跡可能な組織記録へ整理する案です。',items:['既存研修のrecord template','対象グループ・日時・内容のrecord','公式source / update log']}
     };
     const p=new URLSearchParams(location.search);const v=['A','B','C'].includes(p.get('v'))?p.get('v'):'B';const x=variants[v];
     document.querySelector('#title').textContent=x.title;document.querySelector('#lead').textContent=x.lead;document.querySelector('#items').innerHTML=x.items.map(i=>`<li>${i}</li>`).join('');
