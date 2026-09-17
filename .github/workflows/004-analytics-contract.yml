@@ -1,0 +1,40 @@
+name: "#004 Analytics Contract"
+
+on:
+  pull_request:
+    paths:
+      - 'public/004/**'
+      - '.github/workflows/004-e2e-monitor.yml'
+      - '.github/workflows/004-analytics-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'public/004/**'
+      - '.github/workflows/004-e2e-monitor.yml'
+      - '.github/workflows/004-analytics-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify privacy-safe event instrumentation
+        run: |
+          set -euo pipefail
+          node --check public/004/kpi-004.js
+          grep -q 'kpi-004.js' public/004/index.html
+          grep -q "article4_page_view" public/004/kpi-004.js
+          grep -q "article4_pack_generated" public/004/kpi-004.js
+          grep -q "article4_paid_pilot_interest" public/004/kpi-004.js
+          grep -q "avf_synthetic" public/004/kpi-004.js
+          grep -q "credentials:'omit'" public/004/kpi-004.js
+          ! grep -Eq '(audience|completedAt|context|topics|sources|updateLog).*JSON.stringify' public/004/kpi-004.js
+          grep -q 'avf_synthetic=1' .github/workflows/004-e2e-monitor.yml
+          grep -q 'avf-004-evidence-pack-v1' public/004/index.html
+          grep -q 'data-act-exit-audit/issues/new?title=' public/004/index.html
