@@ -35,11 +35,23 @@ jobs:
           node <<'NODE'
           const { chromium } = require('playwright');
           const fs = require('fs');
+          const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
           (async () => {
             const browser = await chromium.launch({headless:true});
             const page = await browser.newPage({acceptDownloads:true});
-            const response = await page.goto(process.env.PRODUCT_URL, {waitUntil:'networkidle'});
+            let response;
+            let currentSource = false;
+            for (let attempt = 1; attempt <= 8; attempt++) {
+              response = await page.goto(process.env.PRODUCT_URL + `&qa_attempt=${attempt}&t=${Date.now()}`, {waitUntil:'networkidle'});
+              if (response && response.status() === 200) {
+                const html = await page.content();
+                currentSource = html.includes('avf_synthetic') && html.includes('data-synthetic') && html.includes('保存されません');
+                if (currentSource) break;
+              }
+              if (attempt < 8) await sleep(15000);
+            }
             if (!response || response.status() !== 200) throw new Error(`product HTTP ${response && response.status()}`);
+            if (!currentSource) throw new Error('production deployment has not propagated current synthetic-journey source');
             await page.fill('#audience', 'Procurement team');
             await page.fill('#completedAt', '2026-09-17');
             await page.fill('#context', 'Vendor selectionで生成AIを利用する際の確認事項');
@@ -68,7 +80,7 @@ jobs:
             await page.click('#send');
             await page.waitForSelector('#ok',{state:'visible'});
             const confirmation = await page.textContent('#ok');
-            if (!confirmation.includes('保存されません')) throw new Error('synthetic confirmation missing');
+            if (!confirmation.includes('保存されません')) throw new Error(`synthetic confirmation missing: ${confirmation}`);
             if (await page.getAttribute('#ok','data-synthetic') !== 'true') throw new Error('synthetic response not confirmed');
             if (await page.getAttribute('#ok','data-retained') !== 'false') throw new Error('synthetic request unexpectedly retained');
             console.log('AVF-004 production E2E PASS: generate -> downloads -> privacy -> synthetic inquiry -> non-retained confirmation');
