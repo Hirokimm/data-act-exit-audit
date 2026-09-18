@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      PRODUCT_URL: https://hirokimm.github.io/data-act-exit-audit/004/?v=B&avf_synthetic=1
+      PRODUCT_URL: https://hirokimm.github.io/data-act-exit-audit/004/?avf_synthetic=1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,7 +30,7 @@ jobs:
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
-      - name: Exercise representative Evidence Pack generation and downloads
+      - name: Exercise representative Evidence Pack and buyer journey
         run: |
           node <<'NODE'
           const { chromium } = require('playwright');
@@ -49,7 +49,7 @@ jobs:
             await page.click('#generate');
             const preview = await page.textContent('#packPreview');
             const pack = JSON.parse(preview);
-            if (pack.schema !== 'avf-004-evidence-pack-v1' || pack.variant !== 'B') throw new Error('unexpected pack schema/variant');
+            if (pack.schema !== 'avf-004-evidence-pack-v1') throw new Error('unexpected pack schema');
             if (pack.record.audience !== 'Procurement team' || !pack.record.aiUseContext.includes('Vendor selection')) throw new Error('representative fields missing');
             const [jsonDownload] = await Promise.all([page.waitForEvent('download'), page.click('#downloadJson')]);
             const jsonPath = await jsonDownload.path();
@@ -58,11 +58,20 @@ jobs:
             const [csvDownload] = await Promise.all([page.waitForEvent('download'), page.click('#downloadCsv')]);
             const csvPath = await csvDownload.path();
             const csv = fs.readFileSync(csvPath, 'utf8');
-            for (const expected of ['avf-004-evidence-pack-v1','Procurement team','Vendor selection']) {
-              if (!csv.includes(expected)) throw new Error(`CSV missing ${expected}`);
-            }
+            for (const expected of ['avf-004-evidence-pack-v1','Procurement team','Vendor selection']) if (!csv.includes(expected)) throw new Error(`CSV missing ${expected}`);
             if (!jsonDownload.suggestedFilename().endsWith('.json') || !csvDownload.suggestedFilename().endsWith('.csv')) throw new Error('download filenames invalid');
-            console.log('AVF-004 production E2E PASS: generate -> preview -> JSON download -> CSV download');
+            const privacyHref = await page.getAttribute('a[href="../privacy.html"]','href');
+            if (!privacyHref) throw new Error('privacy handoff missing');
+            await page.fill('#email','qa@example.com');
+            await page.fill('#site','https://example.com');
+            await page.check('#consent');
+            await page.click('#send');
+            await page.waitForSelector('#ok',{state:'visible'});
+            const confirmation = await page.textContent('#ok');
+            if (!confirmation.includes('保存されません')) throw new Error('synthetic confirmation missing');
+            if (await page.getAttribute('#ok','data-synthetic') !== 'true') throw new Error('synthetic response not confirmed');
+            if (await page.getAttribute('#ok','data-retained') !== 'false') throw new Error('synthetic request unexpectedly retained');
+            console.log('AVF-004 production E2E PASS: generate -> downloads -> privacy -> synthetic inquiry -> non-retained confirmation');
             await browser.close();
           })().catch(err => { console.error(err); process.exit(1); });
           NODE
@@ -81,20 +90,8 @@ jobs:
             const repo = context.repo.repo;
             const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
             const controlledTest = (context.payload.head_commit?.message || '').includes('[test-alert]') && '${{ needs.production-e2e.result }}' === 'success';
-            const body = [
-              'AI Venture Factory #004 automated production monitor.',
-              '',
-              `Production E2E result: ${{ needs.production-e2e.result }}`,
-              `Workflow run: ${runUrl}`,
-              `Commit: ${context.sha}`,
-              controlledTest ? 'Controlled alert-path test: production E2E stayed green; no outage occurred.' : 'Investigate the failed production E2E before treating the core flow as healthy.'
-            ].join('\n');
+            const body = ['AI Venture Factory #004 automated production monitor.','',`Production E2E result: ${{ needs.production-e2e.result }}`,`Workflow run: ${runUrl}`,`Commit: ${context.sha}`,controlledTest ? 'Controlled alert-path test: production E2E stayed green; no outage occurred.' : 'Investigate the failed production E2E before treating the core flow as healthy.'].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({owner, repo, state:'open', per_page:100});
             const existing = issues.find(i => i.title === title);
-            if (existing) {
-              await github.rest.issues.createComment({owner, repo, issue_number:existing.number, body});
-              core.info(`refreshed issue #${existing.number}`);
-            } else {
-              const created = await github.rest.issues.create({owner, repo, title, body, assignees:[owner]});
-              core.info(`created issue #${created.data.number}`);
-            }
+            if (existing) await github.rest.issues.createComment({owner, repo, issue_number:existing.number, body});
+            else await github.rest.issues.create({owner, repo, title, body, assignees:[owner]});
