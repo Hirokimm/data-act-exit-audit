@@ -1,0 +1,82 @@
+name: "#005 Buyer Journey E2E Monitor"
+
+on:
+  workflow_run:
+    workflows: ["Public MVP"]
+    types: [completed]
+  workflow_dispatch:
+  schedule:
+    - cron: '11 */6 * * *'
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: avf-005-buyer-e2e-monitor
+  cancel-in-progress: true
+
+jobs:
+  buyer-e2e:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PRODUCT_URL: https://hirokimm.github.io/data-act-exit-audit/005/?avf_synthetic=1
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser runtime
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Traverse sample, pricing, privacy and non-retained inquiry
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({headless:true});
+            const page = await browser.newPage();
+            const response = await page.goto(process.env.PRODUCT_URL + `&t=${Date.now()}`, {waitUntil:'networkidle'});
+            if (!response || response.status() !== 200) throw new Error(`product HTTP ${response && response.status()}`);
+            const body = await page.textContent('body');
+            for (const expected of ['20社の無料サンプル','100社 Verified CSV','¥9,800','Monthly Renewal Radar','¥19,800/月','3営業日']) if (!body.includes(expected)) throw new Error(`buyer context missing: ${expected}`);
+            const privacyHref = await page.getAttribute('a[href="../privacy.html"]','href');
+            if (!privacyHref) throw new Error('privacy handoff missing');
+            const frame = page.frameLocator('#product');
+            await frame.locator('body').waitFor();
+            const sampleText = await frame.locator('body').textContent();
+            if (!sampleText || !sampleText.includes('CSV')) throw new Error('embedded sample/CSV surface unavailable');
+            await page.fill('#email','qa@example.com');
+            await page.fill('#site','https://example.com');
+            await page.check('#consent');
+            await page.click('#send');
+            await page.waitForSelector('#ok',{state:'visible'});
+            const confirmation = await page.textContent('#ok');
+            if (!confirmation.includes('保存されません')) throw new Error(`synthetic confirmation missing: ${confirmation}`);
+            if (await page.getAttribute('#ok','data-synthetic') !== 'true') throw new Error('synthetic response not confirmed');
+            if (await page.getAttribute('#ok','data-retained') !== 'false') throw new Error('synthetic request unexpectedly retained');
+            console.log('AVF-005 buyer E2E PASS: sample -> pricing -> privacy -> synthetic inquiry -> non-retained confirmation');
+            await browser.close();
+          })().catch(err => { console.error(err); process.exit(1); });
+          NODE
+
+  notify:
+    if: ${{ always() && needs.buyer-e2e.result == 'failure' }}
+    needs: buyer-e2e
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or refresh user-visible #005 monitoring alert
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '[ALERT] #005 buyer journey production monitor';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+            const body = ['AI Venture Factory #005 automated buyer-journey monitor.','',`Buyer E2E result: ${{ needs.buyer-e2e.result }}`,`Workflow run: ${runUrl}`,`Commit: ${context.sha}`,'Investigate the failed rendered buyer journey before treating B06/B09 as healthy.'].join('\n');
+            const { data: issues } = await github.rest.issues.listForRepo({owner, repo, state:'open', per_page:100});
+            const existing = issues.find(i => i.title === title);
+            if (existing) await github.rest.issues.createComment({owner, repo, issue_number:existing.number, body});
+            else await github.rest.issues.create({owner, repo, title, body, assignees:[owner]});
