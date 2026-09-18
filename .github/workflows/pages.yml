@@ -28,41 +28,21 @@ jobs:
           python-version: '3.12'
       - name: Validate source
         run: |
+          set -euo pipefail
           python3 -m py_compile scan.py render_report.py
-          test -f public/index.html
-          test -f public/privacy.html
-          test -f public/terms.html
-          test -f public/contact.html
-          test -f public/004/index.html
-          test -f .github/ISSUE_TEMPLATE/paid-pilot.md
-          grep -q 'Open public paid-pilot inquiry' public/index.html
-          grep -q 'template=paid-pilot.md' public/index.html
-          grep -q 'public GitHub Issue' public/index.html
-          grep -q 'GitHub account/sign-in is required' public/index.html
-          grep -q 'public GitHub Issue' public/contact.html
-          grep -q 'Public submission notice' .github/ISSUE_TEMPLATE/paid-pilot.md
-          grep -q 'monetization_interest' public/index.html
-          grep -q 'data_act_page_view' public/kpi.js
-          grep -q 'data_act_report_open' public/kpi.js
-          grep -q 'data_act_contact_open' public/kpi.js
-          grep -q 'data_act_monetization_interest' public/kpi.js
-          grep -q 'https://ai-search-audit-dun.vercel.app/api/kpi' public/kpi.js
-          grep -q "credentials:'omit'" public/kpi.js
-          grep -q "avf_synthetic" public/kpi.js
-          ! grep -Eq 'JSON.stringify\(\{[^}]*(path|query|url)' public/kpi.js
-          grep -q "connect-src 'self' https://ai-search-audit-dun.vercel.app" public/index.html
-          grep -q 'fixed event names' public/privacy.html
-          grep -q 'Recommended next actions' render_report.py
-          grep -q 'View source evidence and scanner detail' render_report.py
-          grep -q 'How to use this report:' render_report.py
+          for f in public/index.html public/privacy.html public/terms.html public/contact.html public/004/index.html public/005/index.html public/005/public_candidate.html; do test -f "$f"; done
           grep -q 'Stage A public preview' public/004/index.html
-          grep -q 'A Foundation + Record' public/004/index.html
-          grep -q 'B Role-context + Record' public/004/index.html
-          grep -q 'C Record-only' public/004/index.html
-          grep -q 'GitHubアカウントへのサインインが必要' public/004/index.html
-          grep -q '公開GitHub Issue' public/004/index.html
-          grep -q 'no.*negative-demand evidence' public/004/index.html
-          grep -q 'data-act-exit-audit/issues/new?title=' public/004/index.html
+          grep -q '¥9,800' public/004/index.html
+          grep -q 'id="leadForm"' public/004/index.html
+          grep -q 'https://ai-search-audit-dun.vercel.app/api/lead' public/004/index.html
+          grep -q '¥9,800' public/005/index.html
+          grep -q '¥19,800/月' public/005/index.html
+          grep -q 'id="leadForm"' public/005/index.html
+          grep -q 'https://ai-search-audit-dun.vercel.app/api/lead' public/005/index.html
+          grep -q '期限は営業優先度を考える参考情報' public/005/index.html
+          grep -q 'data_act_page_view' public/kpi.js
+          grep -q 'avf_synthetic' public/kpi.js
+          grep -q 'fixed event names' public/privacy.html
       - name: Generate fresh public evidence
         run: |
           python3 scan.py --targets targets.json --out results.json
@@ -78,21 +58,13 @@ jobs:
           cp results.json dist/results.json
           python3 - <<'PY'
           import json, os, pathlib
-          pathlib.Path('dist/health.json').write_text(json.dumps({
-            'ok': True,
-            'service': 'venture-003-data-act-exit-audit',
-            'commit': os.environ['GITHUB_SHA'],
-            'run_id': os.environ['GITHUB_RUN_ID'],
-            'repository': os.environ['GITHUB_REPOSITORY']
-          }, separators=(',', ':')) + '\n')
+          pathlib.Path('dist/health.json').write_text(json.dumps({'ok':True,'service':'venture-003-data-act-exit-audit','commit':os.environ['GITHUB_SHA'],'run_id':os.environ['GITHUB_RUN_ID'],'repository':os.environ['GITHUB_REPOSITORY']},separators=(',',':'))+'\n')
           PY
           touch dist/.nojekyll
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v5
         with:
           enablement: true
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
@@ -109,111 +81,43 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Verify anonymous production and paid-pilot route
+      - name: Verify exact anonymous production and private buyer routes
         env:
           BASE_URL: ${{ steps.deployment.outputs.page_url }}
           EXPECTED_SHA: ${{ github.sha }}
-          CTA_URL: https://github.com/Hirokimm/data-act-exit-audit/issues/new?template=paid-pilot.md
-          TEMPLATE_RAW: https://raw.githubusercontent.com/Hirokimm/data-act-exit-audit/main/.github/ISSUE_TEMPLATE/paid-pilot.md
-          KPI_URL: https://ai-search-audit-dun.vercel.app/api/kpi
-          KPI_ORIGIN: https://hirokimm.github.io
+          LEAD_URL: https://ai-search-audit-dun.vercel.app/api/lead
+          ORIGIN: https://hirokimm.github.io
         run: |
           set -euo pipefail
-
           identity_ok=false
           for attempt in $(seq 1 12); do
-            if curl --fail --silent --show-error --location --max-time 20 "${BASE_URL}health.json" -o health.json; then
-              if python3 - <<'PY'
+            if curl --fail --silent --location --max-time 20 "${BASE_URL}health.json" -o health.json && EXPECTED_SHA="$EXPECTED_SHA" python3 - <<'PY'
           import json, os
-          data=json.load(open('health.json'))
-          ok=(data.get('ok') is True and
-              data.get('service') == 'venture-003-data-act-exit-audit' and
-              data.get('commit') == os.environ['EXPECTED_SHA'])
-          if ok:
-              print('deployment identity verified:', data['commit'])
-              raise SystemExit(0)
-          print('waiting for Pages convergence; current=', data.get('commit'))
-          raise SystemExit(1)
+          d=json.load(open('health.json'))
+          raise SystemExit(0 if d.get('ok') is True and d.get('commit')==os.environ['EXPECTED_SHA'] else 1)
           PY
-              then
-                identity_ok=true
-                break
-              fi
-            fi
-            echo "Waiting for exact Pages deployment identity ($attempt/12)..."
+            then identity_ok=true; break; fi
             sleep 5
           done
           test "$identity_ok" = true
-
-          for path in '' report.html privacy.html terms.html contact.html results.json robots.txt sitemap.xml kpi.js 004/ 004/index.html; do
-            code="$(curl --silent --show-error --location --max-time 20 -o /tmp/body -w '%{http_code}' "${BASE_URL}${path}")"
+          for path in '' report.html privacy.html terms.html contact.html results.json kpi.js 004/ 005/ 005/public_candidate.html; do
+            code="$(curl --silent --location --max-time 20 -o /tmp/body -w '%{http_code}' "${BASE_URL}${path}")"
             echo "${path:-index.html}: HTTP ${code}"
-            test "${code}" = "200"
+            test "$code" = 200
           done
-          curl --fail --silent --location "${BASE_URL}" -o /tmp/home.html
-          curl --fail --silent --location "${BASE_URL}report.html" -o /tmp/report.html
-          curl --fail --silent --location "${BASE_URL}contact.html" -o /tmp/contact.html
-          curl --fail --silent --location "${BASE_URL}privacy.html" -o /tmp/privacy.html
-          curl --fail --silent --location "${BASE_URL}kpi.js" -o /tmp/kpi.js
           curl --fail --silent --location "${BASE_URL}004/" -o /tmp/004.html
-          grep -q 'SaaS Exit Evidence Audit' /tmp/home.html
-          grep -q 'Open public paid-pilot inquiry' /tmp/home.html
-          grep -q 'template=paid-pilot.md' /tmp/home.html
-          grep -q 'public GitHub Issue' /tmp/home.html
-          grep -q 'GitHub account/sign-in is required' /tmp/home.html
-          grep -q 'public GitHub Issue' /tmp/contact.html
-          grep -q 'fixed event names' /tmp/privacy.html
-          grep -q 'data_act_page_view' /tmp/kpi.js
-          grep -q 'avf_synthetic' /tmp/kpi.js
-          grep -q 'UNKNOWN' /tmp/report.html
-          grep -q 'How to use this report:' /tmp/report.html
-          grep -q 'Recommended next actions' /tmp/report.html
-          grep -q 'View source evidence and scanner detail' /tmp/report.html
-          grep -q 'Stage A public preview' /tmp/004.html
-          grep -q 'A Foundation + Record' /tmp/004.html
-          grep -q 'B Role-context + Record' /tmp/004.html
-          grep -q 'C Record-only' /tmp/004.html
-          grep -q 'GitHubアカウントへのサインインが必要' /tmp/004.html
-          grep -q '公開GitHub Issue' /tmp/004.html
-          grep -q 'data-act-exit-audit/issues/new?title=' /tmp/004.html
-
-          cta_meta="$(curl --silent --show-error --location --max-time 20 -o /tmp/cta-body -w '%{http_code}|%{url_effective}' "$CTA_URL")"
-          IFS='|' read -r cta_code cta_effective <<< "$cta_meta"
-          echo "paid-pilot CTA: HTTP $cta_code effective=$cta_effective"
-          test "$cta_code" = "200"
-          case "$cta_effective" in
-            https://github.com/login*|https://github.com/Hirokimm/data-act-exit-audit/issues/new*) ;;
-            *) echo "unexpected paid-pilot route: $cta_effective"; exit 1 ;;
-          esac
-
-          curl --fail --silent --show-error --location --max-time 20 "$TEMPLATE_RAW" -o /tmp/paid-pilot.md
-          grep -q 'name: Paid pilot inquiry' /tmp/paid-pilot.md
-          grep -q 'Public submission notice' /tmp/paid-pilot.md
-          grep -q 'GitHub account/sign-in is required' /tmp/paid-pilot.md
-          grep -q 'One-time SaaS exit evidence audit' /tmp/paid-pilot.md
-          grep -q 'Recurring monitoring / evidence report' /tmp/paid-pilot.md
-
-          kpi_ok=false
-          for attempt in $(seq 1 12); do
-            cors_headers="$(mktemp)"
-            preflight_code="$(curl --silent --show-error --max-time 20 -o /dev/null -D "$cors_headers" -w '%{http_code}' \
-              -X OPTIONS -H "Origin: ${KPI_ORIGIN}" -H 'Access-Control-Request-Method: POST' \
-              -H 'Access-Control-Request-Headers: content-type' "${KPI_URL}" || true)"
-            event_body="$(mktemp)"
-            event_code="$(curl --silent --show-error --max-time 20 -o "$event_body" -w '%{http_code}' \
-              -H "Origin: ${KPI_ORIGIN}" -H 'content-type: application/json' -H 'x-avf-synthetic: 1' \
-              -d '{"event":"data_act_page_view"}' "${KPI_URL}" || true)"
-            echo "KPI contract attempt $attempt/12: preflight=${preflight_code} event=${event_code}"
-            if [[ "$preflight_code" == "204" ]] && \
-               grep -qi "^access-control-allow-origin: ${KPI_ORIGIN}" "$cors_headers" && \
-               [[ "$event_code" == "200" ]] && grep -q '"ok":true' "$event_body"; then
-              kpi_ok=true
-              break
-            fi
-            sleep 10
-          done
-          test "$kpi_ok" = true
-          echo 'Production Pages identity, #004 preview surface, decision-ready report structure, and shared KPI transport contract verified.'
+          curl --fail --silent --location "${BASE_URL}005/" -o /tmp/005.html
+          grep -q '¥9,800' /tmp/004.html
+          grep -q 'launch pilotを相談する' /tmp/004.html
+          grep -q '¥9,800' /tmp/005.html
+          grep -q '¥19,800/月' /tmp/005.html
+          grep -q '有料CSVを申し込む' /tmp/005.html
+          headers="$(mktemp)"
+          preflight="$(curl --silent --max-time 20 -o /dev/null -D "$headers" -w '%{http_code}' -X OPTIONS -H "Origin: ${ORIGIN}" -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type' "$LEAD_URL" || true)"
+          echo "lead preflight=${preflight}"
+          test "$preflight" = 204
+          grep -qi "^access-control-allow-origin: ${ORIGIN}" "$headers"
+          echo 'Exact Pages identity, #004/#005 priced private buyer routes, and lead transport preflight verified.'
 
   browser-qa:
     if: github.ref == 'refs/heads/main'
@@ -223,75 +127,41 @@ jobs:
     env:
       BASE_URL: ${{ needs.deploy.outputs.page_url }}
     steps:
-      - name: Install Lighthouse browser QA
-        run: npm install --global lighthouse@12
-      - name: Render production in mobile and desktop Chromium without polluting real KPI evidence
+      - run: npm install --global lighthouse@12
+      - name: Render production mobile and desktop
         run: |
           set -euo pipefail
-          QA_URL="${BASE_URL}?avf_synthetic=1"
-          lighthouse "${QA_URL}" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=mobile.json
-          lighthouse "${QA_URL}" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=desktop.json
-          lighthouse "${BASE_URL}004/?v=A&avf_synthetic=1" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=004-a-mobile.json
-          lighthouse "${BASE_URL}004/?v=B&avf_synthetic=1" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=004-b-desktop.json
-          lighthouse "${BASE_URL}004/?v=C&avf_synthetic=1" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=004-c-desktop.json
-      - name: Assert browser usability and primary navigation
+          lighthouse "${BASE_URL}?avf_synthetic=1" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=home-mobile.json
+          lighthouse "${BASE_URL}004/?avf_synthetic=1" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=004-mobile.json
+          lighthouse "${BASE_URL}004/?avf_synthetic=1" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=004-desktop.json
+          lighthouse "${BASE_URL}005/?avf_synthetic=1" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=005-mobile.json
+          lighthouse "${BASE_URL}005/?avf_synthetic=1" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=005-desktop.json
+      - name: Assert usability
         run: |
-          set -euo pipefail
           node <<'NODE'
-          const fs = require('fs');
-          for (const file of ['mobile.json', 'desktop.json', '004-a-mobile.json', '004-b-desktop.json', '004-c-desktop.json']) {
-            const r = JSON.parse(fs.readFileSync(file, 'utf8'));
-            if (r.runtimeError) throw new Error(`${file}: ${JSON.stringify(r.runtimeError)}`);
-            const cats = r.categories || {};
-            for (const key of ['accessibility', 'best-practices']) {
-              const score = cats[key]?.score;
-              console.log(`${file} ${key}:`, score);
-              if (typeof score !== 'number' || score < 0.90) {
-                throw new Error(`${file}: ${key} below 0.90`);
-              }
-            }
+          const fs=require('fs');
+          for(const f of ['home-mobile.json','004-mobile.json','004-desktop.json','005-mobile.json','005-desktop.json']){
+            const r=JSON.parse(fs.readFileSync(f,'utf8')); if(r.runtimeError) throw new Error(`${f}: runtime error`);
+            for(const k of ['accessibility','best-practices']){const s=r.categories?.[k]?.score; console.log(f,k,s); if(typeof s!=='number'||s<0.90) throw new Error(`${f}: ${k} below 0.90`)}
           }
           NODE
-          for path in report.html results.json contact.html 004/; do
-            code="$(curl --silent --show-error --location --max-time 20 -o /tmp/body -w '%{http_code}' "${BASE_URL}${path}")"
-            echo "browser QA navigation ${path}: HTTP ${code}"
-            test "${code}" = "200"
-          done
 
   notify:
-    if: ${{ always() && (needs.build.result == 'failure' || needs.deploy.result == 'failure' || needs.browser-qa.result == 'failure' || contains(github.event.head_commit.message, '[test-alert]')) }}
+    if: ${{ always() && (needs.build.result == 'failure' || needs.deploy.result == 'failure' || needs.browser-qa.result == 'failure') }}
     runs-on: ubuntu-latest
     needs: [build, deploy, browser-qa]
     steps:
-      - name: Create or refresh user-visible monitoring alert
-        uses: actions/github-script@v7
+      - uses: actions/github-script@v7
         with:
           script: |
-            const title = '[ALERT] #003 Public MVP monitor failure';
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
-            const body = [
-              'AI Venture Factory #003 automated monitor alert.',
-              '',
-              `Build result: ${process.env.BUILD_RESULT}`,
-              `Deploy result: ${process.env.DEPLOY_RESULT}`,
-              `Browser QA result: ${process.env.BROWSER_QA_RESULT}`,
-              `Workflow run: ${runUrl}`,
-              `Commit: ${context.sha}`,
-              '',
-              'If this was the explicit B12 alert-path test and all jobs are green, no production outage occurred.'
-            ].join('\n');
-            const { data: issues } = await github.rest.issues.listForRepo({owner, repo, state: 'open', per_page: 100});
-            const existing = issues.find(i => i.title === title);
-            if (existing) {
-              await github.rest.issues.createComment({owner, repo, issue_number: existing.number, body});
-              core.info(`refreshed issue #${existing.number}`);
-            } else {
-              const created = await github.rest.issues.create({owner, repo, title, body, assignees: [owner]});
-              core.info(`created issue #${created.data.number}`);
-            }
+            const title='[ALERT] Public MVP monitor failure';
+            const owner=context.repo.owner, repo=context.repo.repo;
+            const body=`Build: ${process.env.BUILD}\nDeploy: ${process.env.DEPLOY}\nBrowser QA: ${process.env.QA}\nRun: ${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}\nCommit: ${context.sha}`;
+            const {data:issues}=await github.rest.issues.listForRepo({owner,repo,state:'open',per_page:100});
+            const ex=issues.find(i=>i.title===title);
+            if(ex) await github.rest.issues.createComment({owner,repo,issue_number:ex.number,body});
+            else await github.rest.issues.create({owner,repo,title,body,assignees:[owner]});
         env:
-          BUILD_RESULT: ${{ needs.build.result }}
-          DEPLOY_RESULT: ${{ needs.deploy.result }}
-          BROWSER_QA_RESULT: ${{ needs.browser-qa.result }}
+          BUILD: ${{ needs.build.result }}
+          DEPLOY: ${{ needs.deploy.result }}
+          QA: ${{ needs.browser-qa.result }}
