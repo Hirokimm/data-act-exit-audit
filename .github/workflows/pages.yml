@@ -109,15 +109,31 @@ jobs:
           curl --fail --silent --location "${BASE_URL}005/" -o /tmp/005.html
           grep -q '¥9,800' /tmp/004.html
           grep -q 'launch pilotを相談する' /tmp/004.html
+          grep -q 'privacy.html' /tmp/004.html
           grep -q '¥9,800' /tmp/005.html
           grep -q '¥19,800/月' /tmp/005.html
           grep -q '有料CSVを申し込む' /tmp/005.html
+          grep -q 'privacy.html' /tmp/005.html
           headers="$(mktemp)"
           preflight="$(curl --silent --max-time 20 -o /dev/null -D "$headers" -w '%{http_code}' -X OPTIONS -H "Origin: ${ORIGIN}" -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type' "$LEAD_URL" || true)"
           echo "lead preflight=${preflight}"
           test "$preflight" = 204
           grep -qi "^access-control-allow-origin: ${ORIGIN}" "$headers"
-          echo 'Exact Pages identity, #004/#005 priced private buyer routes, and lead transport preflight verified.'
+          for venture in 004 005; do
+            payload="$(printf '{"email":"avf-synthetic-%s@example.com","need":"buyer-journey-qa","leadVariant":"quick","site":"https://hirokimm.github.io/data-act-exit-audit/%s/","website":"","consent":true,"synthetic":true}' "$venture" "$venture")"
+            code="$(curl --silent --max-time 20 -o "/tmp/lead-${venture}.json" -w '%{http_code}' -X POST -H "Origin: ${ORIGIN}" -H 'Content-Type: application/json' --data "$payload" "$LEAD_URL")"
+            echo "#${venture} synthetic lead POST=${code}"
+            test "$code" = 200
+            VENTURE="$venture" python3 - <<'PY'
+          import json, os
+          d=json.load(open('/tmp/lead-'+os.environ['VENTURE']+'.json'))
+          assert d.get('ok') is True, d
+          assert d.get('synthetic') is True, d
+          assert d.get('retained') is False, d
+          assert d.get('message'), d
+          PY
+          done
+          echo 'Exact Pages identity, #004/#005 priced private buyer routes, privacy handoff, and non-retained synthetic lead final states verified.'
 
   browser-qa:
     if: github.ref == 'refs/heads/main'
