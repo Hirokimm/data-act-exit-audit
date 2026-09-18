@@ -120,7 +120,7 @@ jobs:
           test "$preflight" = 204
           grep -qi "^access-control-allow-origin: ${ORIGIN}" "$headers"
           for venture in 004 005; do
-            payload="$(printf '{"email":"avf-synthetic-%s@example.com","need":"buyer-journey-qa","leadVariant":"quick","site":"https://hirokimm.github.io/data-act-exit-audit/%s/","website":"","consent":true,"synthetic":true}' "$venture" "$venture")"
+            payload="$(printf '{"email":"avf-synthetic-%s@example.com","need":"one_time","leadVariant":"quick","site":"https://hirokimm.github.io/data-act-exit-audit/%s/","website":"","consent":true,"synthetic":true}' "$venture" "$venture")"
             code="$(curl --silent --max-time 20 -o "/tmp/lead-${venture}.json" -w '%{http_code}' -X POST -H "Origin: ${ORIGIN}" -H 'Content-Type: application/json' --data "$payload" "$LEAD_URL")"
             echo "#${venture} synthetic lead POST=${code}"
             test "$code" = 200
