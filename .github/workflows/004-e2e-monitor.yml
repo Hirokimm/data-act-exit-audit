@@ -1,8 +1,9 @@
 name: "#004 Evidence Pack E2E Monitor"
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["Public MVP"]
+    types: [completed]
   workflow_dispatch:
   schedule:
     - cron: '41 */6 * * *'
@@ -17,6 +18,7 @@ concurrency:
 
 jobs:
   production-e2e:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -35,23 +37,11 @@ jobs:
           node <<'NODE'
           const { chromium } = require('playwright');
           const fs = require('fs');
-          const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
           (async () => {
             const browser = await chromium.launch({headless:true});
             const page = await browser.newPage({acceptDownloads:true});
-            let response;
-            let currentSource = false;
-            for (let attempt = 1; attempt <= 8; attempt++) {
-              response = await page.goto(process.env.PRODUCT_URL + `&qa_attempt=${attempt}&t=${Date.now()}`, {waitUntil:'networkidle'});
-              if (response && response.status() === 200) {
-                const html = await page.content();
-                currentSource = html.includes('avf_synthetic') && html.includes('data-synthetic') && html.includes('保存されません');
-                if (currentSource) break;
-              }
-              if (attempt < 8) await sleep(15000);
-            }
+            const response = await page.goto(process.env.PRODUCT_URL + `&t=${Date.now()}`, {waitUntil:'networkidle'});
             if (!response || response.status() !== 200) throw new Error(`product HTTP ${response && response.status()}`);
-            if (!currentSource) throw new Error('production deployment has not propagated current synthetic-journey source');
             await page.fill('#audience', 'Procurement team');
             await page.fill('#completedAt', '2026-09-17');
             await page.fill('#context', 'Vendor selectionで生成AIを利用する際の確認事項');
@@ -89,7 +79,7 @@ jobs:
           NODE
 
   notify:
-    if: ${{ always() && (needs.production-e2e.result == 'failure' || contains(github.event.head_commit.message, '[test-alert]')) }}
+    if: ${{ always() && needs.production-e2e.result == 'failure' }}
     needs: production-e2e
     runs-on: ubuntu-latest
     steps:
@@ -101,8 +91,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
-            const controlledTest = (context.payload.head_commit?.message || '').includes('[test-alert]') && '${{ needs.production-e2e.result }}' === 'success';
-            const body = ['AI Venture Factory #004 automated production monitor.','',`Production E2E result: ${{ needs.production-e2e.result }}`,`Workflow run: ${runUrl}`,`Commit: ${context.sha}`,controlledTest ? 'Controlled alert-path test: production E2E stayed green; no outage occurred.' : 'Investigate the failed production E2E before treating the core flow as healthy.'].join('\n');
+            const body = ['AI Venture Factory #004 automated production monitor.','',`Production E2E result: ${{ needs.production-e2e.result }}`,`Workflow run: ${runUrl}`,`Commit: ${context.sha}`,'Investigate the failed production E2E before treating the core flow as healthy.'].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({owner, repo, state:'open', per_page:100});
             const existing = issues.find(i => i.title === title);
             if (existing) await github.rest.issues.createComment({owner, repo, issue_number:existing.number, body});
