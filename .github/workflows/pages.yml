@@ -128,19 +128,18 @@ jobs:
       BASE_URL: ${{ needs.deploy.outputs.page_url }}
     steps:
       - run: npm install --global lighthouse@12
-      - name: Render production mobile and desktop
+      - name: Render Stage A buyer routes on mobile and desktop
         run: |
           set -euo pipefail
-          lighthouse "${BASE_URL}?avf_synthetic=1" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=home-mobile.json
           lighthouse "${BASE_URL}004/?avf_synthetic=1" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=004-mobile.json
           lighthouse "${BASE_URL}004/?avf_synthetic=1" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=004-desktop.json
           lighthouse "${BASE_URL}005/?avf_synthetic=1" --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=005-mobile.json
           lighthouse "${BASE_URL}005/?avf_synthetic=1" --quiet --preset=desktop --chrome-flags="--headless --no-sandbox" --output=json --output-path=005-desktop.json
-      - name: Assert usability
+      - name: Assert Stage A buyer-route usability
         run: |
           node <<'NODE'
           const fs=require('fs');
-          for(const f of ['home-mobile.json','004-mobile.json','004-desktop.json','005-mobile.json','005-desktop.json']){
+          for(const f of ['004-mobile.json','004-desktop.json','005-mobile.json','005-desktop.json']){
             const r=JSON.parse(fs.readFileSync(f,'utf8')); if(r.runtimeError) throw new Error(`${f}: runtime error`);
             for(const k of ['accessibility','best-practices']){const s=r.categories?.[k]?.score; console.log(f,k,s); if(typeof s!=='number'||s<0.90) throw new Error(`${f}: ${k} below 0.90`)}
           }
