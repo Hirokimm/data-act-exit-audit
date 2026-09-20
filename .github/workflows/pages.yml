@@ -30,7 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile scan.py render_report.py
-          for f in public/index.html public/privacy.html public/terms.html public/contact.html public/004/index.html public/005/index.html public/005/public_candidate.html; do test -f "$f"; done
+          for f in public/index.html public/privacy.html public/terms.html public/contact.html public/tools/index.html public/004/index.html public/005/index.html public/005/public_candidate.html; do test -f "$f"; done
           grep -q 'Stage A public preview' public/004/index.html
           grep -q '¥9,800' public/004/index.html
           grep -q 'id="leadForm"' public/004/index.html
@@ -100,7 +100,7 @@ jobs:
             sleep 5
           done
           test "$identity_ok" = true
-          for path in '' report.html privacy.html terms.html contact.html results.json kpi.js 004/ 005/ 005/public_candidate.html; do
+          for path in '' report.html privacy.html terms.html contact.html results.json kpi.js tools/ 004/ 005/ 005/public_candidate.html; do
             code="$(curl --silent --location --max-time 20 -o /tmp/body -w '%{http_code}' "${BASE_URL}${path}")"
             echo "${path:-index.html}: HTTP ${code}"
             test "$code" = 200
