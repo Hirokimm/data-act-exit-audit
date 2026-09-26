@@ -112,7 +112,7 @@ jobs:
           grep -q 'privacy.html' /tmp/004.html
           grep -q '¥9,800' /tmp/005.html
           grep -q '¥19,800/月' /tmp/005.html
-          grep -q '有料CSVを申し込む' /tmp/005.html
+          grep -q '対象条件を確認する（課金なし）' /tmp/005.html
           grep -q 'privacy.html' /tmp/005.html
           headers="$(mktemp)"
           preflight="$(curl --silent --max-time 20 -o /dev/null -D "$headers" -w '%{http_code}' -X OPTIONS -H "Origin: ${ORIGIN}" -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type' "$LEAD_URL" || true)"
