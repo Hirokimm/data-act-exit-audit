@@ -1,0 +1,69 @@
+name: Agency Portfolio Pilot order
+description: Request a fixed-scope pilot, credited reservation, or annual portfolio license using public information only.
+title: "[Agency Portfolio] Order request"
+labels:
+  - buyer-intent
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this public form to request transaction terms. Submitting does not create a contract or charge.
+        Do not enter names, email addresses, billing details, private company data, credentials, or confidential information. After fit is confirmed, contract and payment details move to a private channel.
+  - type: dropdown
+    id: offer
+    attributes:
+      label: Offer
+      description: Choose one fixed-scope option.
+      options:
+        - "Pilot reservation — ¥9,800 credited in full to the ¥59,800 pilot (remaining ¥50,000)"
+        - "Agency Portfolio Pilot — 50 organizations, one CSV delivery, ¥59,800"
+        - "Agency Portfolio License — up to 500 organizations/month, 12 differential CSV updates, ¥498,000/year"
+    validations:
+      required: true
+  - type: dropdown
+    id: readiness
+    attributes:
+      label: Transaction readiness
+      options:
+        - "Ready to confirm scope and payment terms within 30 days"
+        - "Evaluating within 90 days"
+        - "Researching only"
+    validations:
+      required: true
+  - type: dropdown
+    id: certification_scope
+    attributes:
+      label: Initial certification scope
+      options:
+        - "ISMS"
+        - "ISMS plus another public certification type"
+        - "Other public certification type"
+    validations:
+      required: true
+  - type: input
+    id: public_url
+    attributes:
+      label: Public organization or service URL
+      description: Public URL only. Do not include private portals or personal information.
+      placeholder: "https://example.com"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: State the public-data fields or checks required for acceptance. Do not include confidential information.
+      placeholder: "Example: CSV includes organization, official domain, certification type, expiry context, evidence URL, and observation date."
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Public-form acknowledgements
+      options:
+        - label: "I understand that submission alone creates no contract or charge."
+          required: true
+        - label: "I will not enter personal, billing, credential, employer-internal, or confidential information."
+          required: true
+        - label: "I understand that public certification evidence is not proof of purchase or renewal intent."
+          required: true
