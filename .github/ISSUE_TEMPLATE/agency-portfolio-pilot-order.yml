@@ -17,6 +17,7 @@ body:
       options:
         - "Pilot reservation — ¥9,800 credited in full to the ¥59,800 pilot (remaining ¥50,000)"
         - "Agency Portfolio Pilot — 50 organizations, one CSV delivery, ¥59,800"
+        - "Agency Portfolio License kickoff reservation — ¥49,800 credited in full to the ¥498,000 first-year license (remaining ¥448,200)"
         - "Agency Portfolio License — up to 500 organizations/month, 12 differential CSV updates, ¥498,000/year"
     validations:
       required: true
