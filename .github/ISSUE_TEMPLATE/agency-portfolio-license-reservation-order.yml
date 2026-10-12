@@ -1,0 +1,71 @@
+name: Agency Portfolio annual reservation order
+description: Request the ¥49,800 kickoff reservation for the ¥498,000 first-year Agency Portfolio License using public information only.
+title: "[Agency Portfolio Annual Reservation] Order request"
+labels:
+  - buyer-intent
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fixed offer: ¥49,800 kickoff reservation, credited in full to the ¥498,000 first-year Agency Portfolio License. Remaining first-year balance: ¥448,200.
+        Scope: up to 500 organizations, 12 monthly differential CSV updates, and up to 10 users in one legal entity.
+        Submitting this public form does not create a contract or charge. After fit is confirmed, written terms and payment details move to a private channel.
+        Do not enter names, email addresses, billing details, private company data, credentials, employer-internal information, or confidential information.
+  - type: dropdown
+    id: readiness
+    attributes:
+      label: Transaction readiness
+      description: Choose the closest purchasing timeframe.
+      options:
+        - "Ready to confirm scope and payment terms within 30 days"
+        - "Evaluating within 90 days"
+        - "Researching only"
+    validations:
+      required: true
+  - type: dropdown
+    id: certification_scope
+    attributes:
+      label: Initial certification scope
+      options:
+        - "ISMS"
+        - "ISMS plus another public certification type"
+        - "Other public certification type"
+    validations:
+      required: true
+  - type: input
+    id: organization_count
+    attributes:
+      label: Requested first-month organization count
+      description: Enter a number from 1 to 500.
+      placeholder: "100"
+    validations:
+      required: true
+  - type: input
+    id: public_url
+    attributes:
+      label: Public organization or service URL
+      description: Public URL only. Do not include private portals or personal information.
+      placeholder: "https://example.com"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: State the public-data fields or checks required for acceptance. Do not include confidential information.
+      placeholder: "Example: CSV includes organization, official domain, certification type, expiry context, evidence URL, and observation date."
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Public-form acknowledgements
+      options:
+        - label: "I am requesting the ¥49,800 kickoff reservation credited to the ¥498,000 first-year license, subject to written fit and payment terms."
+          required: true
+        - label: "I understand that submission alone creates no contract or charge."
+          required: true
+        - label: "I will not enter personal, billing, credential, employer-internal, or confidential information."
+          required: true
+        - label: "I understand that public certification evidence is not proof of purchase or renewal intent."
+          required: true
