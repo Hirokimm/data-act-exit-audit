@@ -23,6 +23,17 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: reservation_invoice_intent
+    attributes:
+      label: Reservation invoice intent
+      description: Choose the next commercial step after public-scope fit is confirmed. No invoice or charge is created by this public submission.
+      options:
+        - "After fit confirmation, send written terms and the ¥49,800 reservation invoice"
+        - "Send written terms first; I will confirm whether to receive the invoice"
+        - "Not ready to receive an invoice"
+    validations:
+      required: true
+  - type: dropdown
     id: certification_scope
     attributes:
       label: Initial certification scope
