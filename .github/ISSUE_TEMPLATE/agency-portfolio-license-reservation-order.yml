@@ -9,6 +9,7 @@ body:
       value: |
         Fixed offer: ¥49,800 kickoff reservation, credited in full to the ¥498,000 first-year Agency Portfolio License. Remaining first-year balance: ¥448,200.
         Scope: up to 500 organizations, 12 monthly differential CSV updates, and up to 10 users in one legal entity.
+        Reservation window: requests must be submitted by 2026-10-31 23:59 JST. This public cohort is capped at the first 10 reservations accepted after fit and written terms are confirmed. Submission time does not guarantee acceptance.
         Submitting this public form does not create a contract or charge. After fit is confirmed, written terms and payment details move to a private channel.
         Do not enter names, email addresses, billing details, private company data, credentials, employer-internal information, or confidential information.
   - type: dropdown
@@ -84,6 +85,8 @@ body:
       label: Public-form acknowledgements
       options:
         - label: "I am requesting the ¥49,800 kickoff reservation credited to the ¥498,000 first-year license, subject to written fit and payment terms."
+          required: true
+        - label: "I understand that this reservation window closes on 2026-10-31 at 23:59 JST and acceptance is limited to the first 10 fit-confirmed reservations."
           required: true
         - label: "I understand that submission alone creates no contract or charge."
           required: true
