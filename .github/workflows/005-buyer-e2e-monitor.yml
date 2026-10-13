@@ -50,6 +50,7 @@ jobs:
             if (!sampleText || !sampleText.includes('CSV')) throw new Error('embedded sample/CSV surface unavailable');
             await page.fill('#email','qa@example.com');
             await page.fill('#site','https://example.com');
+            await page.selectOption('#purchaseStage','ready_30d');
             await page.check('#consent');
             await page.click('#send');
             await page.waitForSelector('#ok',{state:'visible'});
