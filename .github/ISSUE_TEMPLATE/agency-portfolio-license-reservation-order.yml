@@ -34,6 +34,17 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: procurement_route
+    attributes:
+      label: Procurement route after written terms are accepted
+      description: Choose the expected purchasing route. Do not enter billing or internal procurement details in this public form.
+      options:
+        - "Invoice can be paid after written terms are accepted; no purchase order expected"
+        - "Purchase order can follow accepted written terms"
+        - "Procurement route is not yet confirmed"
+    validations:
+      required: true
+  - type: dropdown
     id: certification_scope
     attributes:
       label: Initial certification scope
