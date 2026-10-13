@@ -1,0 +1,109 @@
+name: Agency Portfolio license expansion order
+description: Request annual user or legal-entity expansion rights for the Agency Portfolio License using public information only.
+title: "[Agency Portfolio Expansion] Order request"
+labels:
+  - buyer-intent
+body:
+  - type: markdown
+    attributes:
+      value: |
+        License expansion offer for an active or in-procurement Agency Portfolio License:
+        - Additional 10-user pack: JPY 49,800 per year
+        - Additional legal-entity usage right: JPY 99,800 per year
+        - Bundle of one additional 10-user pack plus one additional legal-entity usage right: JPY 129,800 per year
+
+        These add-ons expand usage rights to the same licensed dataset and delivery cadence. They do not add organizations, custom research, or a new dataset.
+        Submitting this public form does not create a contract, invoice, charge, or license right. Eligibility, base-license status, quantities, term alignment, written terms, and payment details are confirmed privately.
+        Do not enter names, email addresses, billing details, private company data, credentials, employer-internal information, or confidential information.
+  - type: dropdown
+    id: base_license_status
+    attributes:
+      label: Base-license status
+      description: Select the closest status. No confidential account details are required.
+      options:
+        - "Active Agency Portfolio License"
+        - "Agency Portfolio License procurement is in progress"
+        - "Requesting the base license and expansion together"
+        - "Evaluating only"
+    validations:
+      required: true
+  - type: dropdown
+    id: expansion_offer
+    attributes:
+      label: Expansion offer
+      options:
+        - "Additional 10-user pack — JPY 49,800 per year"
+        - "Additional legal-entity usage right — JPY 99,800 per year"
+        - "10-user plus legal-entity bundle — JPY 129,800 per year"
+    validations:
+      required: true
+  - type: input
+    id: quantity
+    attributes:
+      label: Requested quantity
+      description: Enter the number of add-on units requested. Final quantity and eligibility are confirmed privately.
+      placeholder: "1"
+    validations:
+      required: true
+  - type: dropdown
+    id: start_timing
+    attributes:
+      label: Desired start timing
+      options:
+        - "Within 30 days"
+        - "Within 90 days"
+        - "At the next base-license renewal"
+        - "Timing not yet confirmed"
+    validations:
+      required: true
+  - type: dropdown
+    id: invoice_intent
+    attributes:
+      label: Invoice intent after eligibility and written terms are confirmed
+      description: No invoice or charge is created by this public submission.
+      options:
+        - "Send written terms and the add-on invoice after eligibility confirmation"
+        - "Send written terms first; I will confirm whether to receive the invoice"
+        - "Not ready to receive an invoice"
+    validations:
+      required: true
+  - type: dropdown
+    id: procurement_route
+    attributes:
+      label: Procurement route
+      description: Do not enter billing or internal procurement details in this public form.
+      options:
+        - "Invoice can be paid after written terms are accepted; no purchase order expected"
+        - "Purchase order can follow accepted written terms"
+        - "Procurement route is not yet confirmed"
+    validations:
+      required: true
+  - type: input
+    id: public_url
+    attributes:
+      label: Public organization or service URL
+      description: Public URL only. Do not include private portals or personal information.
+      placeholder: "https://example.com"
+    validations:
+      required: true
+  - type: textarea
+    id: expansion_use
+    attributes:
+      label: Intended expansion use
+      description: Describe only the non-confidential reason for adding users or a legal entity.
+      placeholder: "Example: Extend access to a second advisory team using the same licensed dataset."
+    validations:
+      required: true
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Public-form acknowledgements
+      options:
+        - label: "I understand that the selected add-on is an annual usage-right expansion and does not add organizations, custom research, or a new dataset."
+          required: true
+        - label: "I understand that eligibility, quantities, term alignment, written terms, and payment are confirmed privately."
+          required: true
+        - label: "I understand that submission alone creates no contract, invoice, charge, or license right."
+          required: true
+        - label: "I will not enter personal, billing, credential, employer-internal, or confidential information."
+          required: true
