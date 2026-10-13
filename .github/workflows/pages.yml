@@ -38,6 +38,7 @@ jobs:
           grep -q '¥9,800' public/005/index.html
           grep -q '¥19,800/月' public/005/index.html
           grep -q 'id="leadForm"' public/005/index.html
+          grep -q 'id="purchaseStage"' public/005/index.html
           grep -q 'https://ai-search-audit-dun.vercel.app/api/lead' public/005/index.html
           grep -q '期限は営業優先度を考える参考情報' public/005/index.html
           grep -q 'data_act_page_view' public/kpi.js
@@ -112,7 +113,7 @@ jobs:
           grep -q 'privacy.html' /tmp/004.html
           grep -q '¥9,800' /tmp/005.html
           grep -q '¥19,800/月' /tmp/005.html
-          grep -q '対象条件を確認する（課金なし）' /tmp/005.html
+          grep -q '購入条件を確認する（課金なし）' /tmp/005.html
           grep -q 'privacy.html' /tmp/005.html
           headers="$(mktemp)"
           preflight="$(curl --silent --max-time 20 -o /dev/null -D "$headers" -w '%{http_code}' -X OPTIONS -H "Origin: ${ORIGIN}" -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type' "$LEAD_URL" || true)"
@@ -120,7 +121,11 @@ jobs:
           test "$preflight" = 204
           grep -qi "^access-control-allow-origin: ${ORIGIN}" "$headers"
           for venture in 004 005; do
-            payload="$(printf '{"email":"avf-synthetic-%s@example.com","need":"one_time","leadVariant":"quick","site":"https://hirokimm.github.io/data-act-exit-audit/%s/","website":"","consent":true,"synthetic":true}' "$venture" "$venture")"
+            if [ "$venture" = "005" ]; then
+              payload="$(printf '{"email":"avf-synthetic-%s@example.com","need":"one_time","leadVariant":"quick","site":"https://hirokimm.github.io/data-act-exit-audit/%s/","purchaseStage":"ready_30d","website":"","consent":true,"synthetic":true}' "$venture" "$venture")"
+            else
+              payload="$(printf '{"email":"avf-synthetic-%s@example.com","need":"one_time","leadVariant":"quick","site":"https://hirokimm.github.io/data-act-exit-audit/%s/","website":"","consent":true,"synthetic":true}' "$venture" "$venture")"
+            fi
             code="$(curl --silent --max-time 20 -o "/tmp/lead-${venture}.json" -w '%{http_code}' -X POST -H "Origin: ${ORIGIN}" -H 'Content-Type: application/json' --data "$payload" "$LEAD_URL")"
             echo "#${venture} synthetic lead POST=${code}"
             test "$code" = 200
