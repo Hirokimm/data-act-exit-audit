@@ -10,6 +10,7 @@ body:
         Fixed offer: ¥49,800 kickoff reservation, credited in full to the ¥498,000 first-year Agency Portfolio License. Remaining first-year balance: ¥448,200.
         Scope: up to 500 organizations, 12 monthly differential CSV updates, and up to 10 users in one legal entity.
         Price lock: after fit is confirmed, written terms are accepted, and the reservation payment clears, the ¥498,000 first-year price is held for 30 calendar days. If the final order is not executed within that period, later pricing may apply. Reservation treatment, cancellation and refund terms are governed by the accepted written terms.
+        Reservation confirmation: after the reservation payment clears, a private written confirmation will state the price-lock activation date, price-lock expiry date, ¥49,800 credit, ¥448,200 remaining first-year balance, selected procurement route, and agreed public-data scope. This reusable confirmation is intended to support the buyer's internal approval and final-order process.
         Reservation window: requests must be submitted by 2026-10-31 23:59 JST. This public cohort is capped at the first 10 reservations accepted after fit and written terms are confirmed. Submission time does not guarantee acceptance.
         Submitting this public form does not create a contract or charge. After fit is confirmed, written terms and payment details move to a private channel.
         Do not enter names, email addresses, billing details, private company data, credentials, employer-internal information, or confidential information.
@@ -88,6 +89,8 @@ body:
         - label: "I am requesting the ¥49,800 kickoff reservation credited to the ¥498,000 first-year license, subject to written fit and payment terms."
           required: true
         - label: "I understand that, after accepted written terms and cleared reservation payment, the ¥498,000 first-year price is held for 30 calendar days; later pricing may apply if the final order is not executed within that period."
+          required: true
+        - label: "I understand that the private reservation confirmation will record the lock dates, ¥49,800 credit, ¥448,200 remaining balance, procurement route, and agreed public-data scope."
           required: true
         - label: "I understand that this reservation window closes on 2026-10-31 at 23:59 JST and acceptance is limited to the first 10 fit-confirmed reservations."
           required: true
