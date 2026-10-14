@@ -1,0 +1,119 @@
+name: Reuse Global 1K kickoff reservation order
+description: Request the JPY 49,800 kickoff reservation credited to the JPY 3,980,000 annual 1K add-on.
+title: "[Reuse Global 1K Reservation] Order request"
+labels:
+  - buyer-intent
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fixed offer: JPY 49,800 kickoff reservation, credited in full to the JPY 3,980,000 annual Client-Deliverable Reuse Global 1K add-on. Remaining annual balance: JPY 3,930,200.
+
+        Scope: derived client-deliverable reuse rights for 501–1,000 named end-client organizations, for an active or simultaneously procured Agency Portfolio License.
+
+        Price lock: after eligibility is confirmed, written terms are accepted, and the reservation payment clears, the JPY 3,980,000 annual price is held for 30 calendar days. If the final order is not executed within that period, later pricing may apply. Reservation treatment, cancellation, and refund terms are governed by the accepted written terms.
+
+        Reservation confirmation: after cleared payment, a private written confirmation will state the price-lock activation and expiry dates, JPY 49,800 credit, JPY 3,930,200 remaining annual balance, selected procurement route, named-client band, and accepted output scope.
+
+        Submitting this public form does not create a contract, invoice, charge, reservation, price lock, or license right. Eligibility, written terms, tax, billing, payment, and confidential details move to a private channel.
+        Do not enter client names, personal information, billing details, private company data, credentials, employer-internal information, or confidential information.
+  - type: dropdown
+    id: base_license_status
+    attributes:
+      label: Base-license status
+      description: Select the closest public-safe status.
+      options:
+        - "Active Agency Portfolio License"
+        - "Agency Portfolio License procurement is in progress"
+        - "Requesting the base license and this add-on together"
+        - "Evaluating only"
+    validations:
+      required: true
+  - type: dropdown
+    id: client_band
+    attributes:
+      label: Expected annual end-client organization band
+      description: Do not identify clients publicly. Named-client scope is finalized privately.
+      options:
+        - "501–650 end-client organizations"
+        - "651–800 end-client organizations"
+        - "801–1,000 end-client organizations"
+    validations:
+      required: true
+  - type: checkboxes
+    id: intended_outputs
+    attributes:
+      label: Intended client deliverables
+      description: Select all public-safe output types that apply.
+      options:
+        - label: "Client-specific written reports or memos"
+        - label: "Client-specific presentations"
+        - label: "Derived charts or tables"
+        - label: "Internal advisory workpapers supporting a client deliverable"
+  - type: dropdown
+    id: readiness
+    attributes:
+      label: Transaction readiness
+      options:
+        - "Ready to confirm eligibility, scope, and payment terms within 30 days"
+        - "Evaluating within 90 days"
+        - "Researching only"
+    validations:
+      required: true
+  - type: dropdown
+    id: reservation_invoice_intent
+    attributes:
+      label: Reservation invoice intent
+      description: No invoice or charge is created by this public submission.
+      options:
+        - "After eligibility confirmation, send written terms and the JPY 49,800 reservation invoice"
+        - "Send written terms first; I will confirm whether to receive the invoice"
+        - "Not ready to receive an invoice"
+    validations:
+      required: true
+  - type: dropdown
+    id: procurement_route
+    attributes:
+      label: Procurement route after written terms are accepted
+      description: Do not enter billing or internal procurement details publicly.
+      options:
+        - "Invoice can be paid after written terms are accepted; no purchase order expected"
+        - "Purchase order can follow accepted written terms"
+        - "Procurement route is not yet confirmed"
+    validations:
+      required: true
+  - type: input
+    id: public_url
+    attributes:
+      label: Public organization or service URL
+      description: Public URL only. Do not include private portals or personal information.
+      placeholder: "https://example.com"
+    validations:
+      required: true
+  - type: textarea
+    id: public_use_case
+    attributes:
+      label: Public-safe use case
+      description: Describe the intended deliverable pattern without naming clients or disclosing confidential information.
+      placeholder: "Example: Incorporate derived certification-monitoring charts into recurring advisory reports for 651–800 clients."
+    validations:
+      required: true
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Public-form acknowledgements
+      options:
+        - label: "I am requesting the JPY 49,800 kickoff reservation credited to the JPY 3,980,000 annual add-on, subject to eligibility and accepted written terms."
+          required: true
+        - label: "I understand that, after accepted written terms and cleared reservation payment, the JPY 3,980,000 annual price is held for 30 calendar days."
+          required: true
+        - label: "I understand the remaining annual balance after the reservation credit is JPY 3,930,200."
+          required: true
+        - label: "I understand the private confirmation will record the lock dates, credit, remaining balance, procurement route, named-client band, and accepted output scope."
+          required: true
+        - label: "I understand submission alone creates no contract, invoice, charge, reservation, price lock, or license right."
+          required: true
+        - label: "I understand the add-on permits derived client deliverables but not raw dataset redistribution, sublicensing, resale of access, or a white-label portal/API."
+          required: true
+        - label: "I will not enter client names, personal, billing, credential, employer-internal, or confidential information."
+          required: true
