@@ -1,0 +1,115 @@
+name: Agency Portfolio Client-Deliverable Reuse Global Network order
+description: Request annual derived-deliverable reuse rights for up to 10,000 named end-client organizations.
+title: "[Agency Portfolio Client Reuse Global Network] Order request"
+labels:
+  - buyer-intent
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Client-Deliverable Reuse Global Network: JPY 27,980,000 per year.
+
+        For an active or simultaneously procured Agency Portfolio License, this add-on permits the licensee to incorporate derived analyses, summaries, charts, and advisory workpapers based on the licensed dataset into client-specific deliverables for up to 10,000 named end-client organizations during the annual term.
+
+        This is a fixed-price option for global agency networks, multinational advisory groups, and large professional-services platforms expecting to serve 5,001–10,000 named end-client organizations. It does not permit redistribution of the raw dataset, sublicensing, resale of dataset access, a white-label data portal or API, bulk public republication, or use outside the accepted written scope. It does not add organizations to the dataset, custom research, implementation work, or a faster delivery cadence.
+
+        Submitting this public form does not create a contract, invoice, charge, reservation, or license right. Eligibility, base-license status, end-client count, term alignment, accepted outputs, written terms, and payment details are confirmed privately.
+        Do not enter client names, personal information, billing details, private company data, credentials, employer-internal information, or confidential information.
+  - type: dropdown
+    id: base_license_status
+    attributes:
+      label: Base-license status
+      description: Select the closest public-safe status.
+      options:
+        - "Active Agency Portfolio License"
+        - "Agency Portfolio License procurement is in progress"
+        - "Requesting the base license and this add-on together"
+        - "Evaluating only"
+    validations:
+      required: true
+  - type: dropdown
+    id: client_band
+    attributes:
+      label: Expected annual end-client organization band
+      description: Do not identify clients publicly. Named-client scope is finalized privately.
+      options:
+        - "5,001–6,000 end-client organizations"
+        - "6,001–8,000 end-client organizations"
+        - "8,001–10,000 end-client organizations"
+        - "More than 10,000; request a private scope proposal"
+    validations:
+      required: true
+  - type: checkboxes
+    id: intended_outputs
+    attributes:
+      label: Intended client deliverables
+      description: Select all public-safe output types that apply.
+      options:
+        - label: "Client-specific written reports or memos"
+        - label: "Client-specific presentations"
+        - label: "Derived charts or tables"
+        - label: "Internal advisory workpapers supporting a client deliverable"
+  - type: dropdown
+    id: start_timing
+    attributes:
+      label: Desired start timing
+      options:
+        - "Within 30 days"
+        - "Within 90 days"
+        - "At the next base-license renewal"
+        - "Timing not yet confirmed"
+    validations:
+      required: true
+  - type: dropdown
+    id: invoice_intent
+    attributes:
+      label: Invoice intent after eligibility and written terms are confirmed
+      description: No invoice or charge is created by this public submission.
+      options:
+        - "Send written terms and the JPY 27,980,000 annual add-on invoice after eligibility confirmation"
+        - "Send written terms first; I will confirm whether to receive the invoice"
+        - "Not ready to receive an invoice"
+    validations:
+      required: true
+  - type: dropdown
+    id: procurement_route
+    attributes:
+      label: Procurement route
+      description: Do not enter billing or internal procurement details publicly.
+      options:
+        - "Invoice can be paid after written terms are accepted; no purchase order expected"
+        - "Purchase order can follow accepted written terms"
+        - "Procurement route is not yet confirmed"
+    validations:
+      required: true
+  - type: input
+    id: public_url
+    attributes:
+      label: Public organization or service URL
+      description: Public URL only. Do not include private portals or personal information.
+      placeholder: "https://example.com"
+    validations:
+      required: true
+  - type: textarea
+    id: public_use_case
+    attributes:
+      label: Public-safe use case
+      description: Describe the intended deliverable pattern without naming clients or disclosing confidential information.
+      placeholder: "Example: Include derived certification-monitoring charts in recurring advisory reports for 6,000–8,000 clients."
+    validations:
+      required: true
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Public-form acknowledgements
+      options:
+        - label: "I understand the JPY 27,980,000 annual price covers up to 10,000 named end-client organizations, subject to accepted written terms."
+          required: true
+        - label: "I understand this add-on permits derived client deliverables but not raw dataset redistribution, sublicensing, resale of access, or a white-label portal/API."
+          required: true
+        - label: "I understand eligibility, named-client scope, term alignment, accepted outputs, and payment are confirmed privately."
+          required: true
+        - label: "I understand submission alone creates no contract, invoice, charge, reservation, or license right."
+          required: true
+        - label: "I will not enter client names, personal, billing, credential, employer-internal, or confidential information."
+          required: true
