@@ -1,0 +1,158 @@
+name: Reuse Global procurement-ready reservation handoff
+description: For budget-approved 1K–20K buyers ready to start private vendor onboarding, purchase-order, written-terms, and reservation-invoice processing.
+title: "[Reuse Global Procurement Handoff] Reservation purchase process"
+labels:
+  - buyer-intent
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this handoff when internal budget authority exists and procurement is ready to start the private process for the matching Client-Deliverable Reuse Global reservation.
+
+        | Tier | Annual named-client band | Reservation | Annual price | Remaining after reservation credit |
+        | --- | ---: | ---: | ---: | ---: |
+        | Global 1K | 501–1,000 | JPY 49,800 | JPY 3,980,000 | JPY 3,930,200 |
+        | Global Plus 2.5K | 1,001–2,500 | JPY 98,000 | JPY 7,980,000 | JPY 7,882,000 |
+        | Global Scale 5K | 2,501–5,000 | JPY 198,000 | JPY 14,980,000 | JPY 14,782,000 |
+        | Global Network 10K | 5,001–10,000 | JPY 298,000 | JPY 27,980,000 | JPY 27,682,000 |
+        | Global Network 20K | 10,001–20,000 | JPY 498,000 | JPY 49,800,000 | JPY 49,302,000 |
+
+        The reservation is credited in full against the selected annual price, subject to eligibility, accepted scope, and mutually accepted written terms. The matching annual price is locked for 30 calendar days only after eligibility and scope confirmation, accepted written terms, and cleared reservation payment.
+
+        Do not publish legal-entity details, personal information, client names, billing or banking information, tax identifiers, purchase-order numbers, security documents, credentials, internal system links, or confidential information. Those details move privately after this public-safe handoff.
+
+        This submission records procurement intent only. It creates no quote, contract, invoice, charge, reservation, price lock, license right, response-time guarantee, or delivery obligation.
+
+  - type: dropdown
+    id: selected_tier
+    attributes:
+      label: Budget-approved reservation tier
+      options:
+        - "Global 1K — JPY 49,800 reservation / JPY 3,980,000 annual"
+        - "Global Plus 2.5K — JPY 98,000 reservation / JPY 7,980,000 annual"
+        - "Global Scale 5K — JPY 198,000 reservation / JPY 14,980,000 annual"
+        - "Global Network 10K — JPY 298,000 reservation / JPY 27,980,000 annual"
+        - "Global Network 20K — JPY 498,000 reservation / JPY 49,800,000 annual"
+        - "Approved cap covers multiple tiers; confirm the smallest eligible tier privately"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: procurement_stage
+    attributes:
+      label: Current procurement stage
+      options:
+        - "Ready for private written terms and reservation invoice"
+        - "Vendor onboarding must be completed before invoice"
+        - "Purchase order must be issued after accepted written terms"
+        - "Security or compliance review must be completed before payment"
+        - "Multiple steps apply; confirm the sequence privately"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: required_handoff_items
+    attributes:
+      label: Private procurement handoff items needed
+      description: Select all that apply. Do not paste forms, private links, or confidential requirements here.
+      options:
+        - label: "Written commercial terms"
+        - label: "Quotation or commercial summary"
+        - label: "Vendor onboarding information"
+        - label: "Purchase-order line description"
+        - label: "Reservation invoice"
+        - label: "Security or compliance questionnaire"
+        - label: "Tax or remittance information"
+        - label: "Private scope confirmation"
+
+  - type: dropdown
+    id: procurement_owner
+    attributes:
+      label: Buyer-side process owner
+      description: Select a role only. Do not publish a person's name or contact details.
+      options:
+        - "Procurement"
+        - "Finance or accounts payable"
+        - "Legal"
+        - "Security or compliance"
+        - "Business sponsor or budget owner"
+        - "Multiple teams"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: requested_start_window
+    attributes:
+      label: Requested private handoff start window
+      description: Timing is a request and not a guaranteed service level.
+      options:
+        - "Within 2 business days"
+        - "Within 5 business days"
+        - "Within 10 business days"
+        - "Within 20 business days"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: purchase_order_route
+    attributes:
+      label: Expected purchase-order route
+      options:
+        - "No purchase order expected after accepted written terms"
+        - "Purchase order required before reservation invoice"
+        - "Purchase order required after quotation approval"
+        - "Confirm privately"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: base_license_status
+    attributes:
+      label: Base-license status
+      options:
+        - "Active Agency Portfolio License"
+        - "Agency Portfolio License procurement is in progress"
+        - "Requesting the base license and reuse add-on together"
+        - "Need private eligibility confirmation before procurement starts"
+    validations:
+      required: true
+
+  - type: input
+    id: public_url
+    attributes:
+      label: Public organization or service URL
+      description: Public URL only. Do not include private portals, ticket links, or personal information.
+      placeholder: "https://example.com"
+    validations:
+      required: true
+
+  - type: textarea
+    id: public_procurement_context
+    attributes:
+      label: Public-safe procurement context
+      description: State the intended sequence and requested next step without naming people or disclosing private requirements.
+      placeholder: "Example: Budget is approved for the 2.5K tier. Vendor onboarding and quotation approval are required before a reservation invoice can be processed."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: procurement_handoff_acknowledgements
+    attributes:
+      label: Procurement-ready buyer acknowledgements
+      options:
+        - label: "I have authority to request this private procurement handoff for the organization."
+          required: true
+        - label: "Internal budget authority exists for the selected reservation or an approved cap covering the privately confirmed replacement tier."
+          required: true
+        - label: "The buyer is prepared to review private written terms and complete the applicable procurement steps."
+          required: true
+        - label: "Subject to eligibility, scope, and accepted written terms, the buyer intends to process the matching reservation invoice."
+          required: true
+        - label: "I understand the reservation is credited in full against the matching annual price under accepted written terms."
+          required: true
+        - label: "I understand the 30-day annual price lock starts only after eligibility and scope confirmation, accepted written terms, and cleared reservation payment."
+          required: true
+        - label: "I understand public submission creates no quote, contract, invoice, charge, reservation, price lock, license right, response-time guarantee, or delivery obligation."
+          required: true
+        - label: "I will keep legal, personal, client, billing, banking, tax, purchase-order, security, credential, internal-system, and confidential information out of this public form."
+          required: true
