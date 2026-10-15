@@ -1,0 +1,151 @@
+name: Reuse Global budget-approved reservation fast track
+description: For budget-approved buyers ready to review written terms and pay the matching 1K–20K reservation invoice.
+title: "[Reuse Global Fast Track] Budget-approved reservation request"
+labels:
+  - buyer-intent
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this fast-track request only when internal budget authority exists and the buyer is ready to review private written terms and pay the matching reservation invoice after eligibility and scope confirmation.
+
+        | Tier | Annual named-client band | Reservation | Annual price | Remaining after reservation credit |
+        | --- | ---: | ---: | ---: | ---: |
+        | Global 1K | 501–1,000 | JPY 49,800 | JPY 3,980,000 | JPY 3,930,200 |
+        | Global Plus 2.5K | 1,001–2,500 | JPY 98,000 | JPY 7,980,000 | JPY 7,882,000 |
+        | Global Scale 5K | 2,501–5,000 | JPY 198,000 | JPY 14,980,000 | JPY 14,782,000 |
+        | Global Network 10K | 5,001–10,000 | JPY 298,000 | JPY 27,980,000 | JPY 27,682,000 |
+        | Global Network 20K | 10,001–20,000 | JPY 498,000 | JPY 49,800,000 | JPY 49,302,000 |
+
+        The reservation is credited in full against the selected annual price, subject to eligibility, accepted scope, and mutually accepted written terms. After eligibility and scope are confirmed, written terms are accepted, and the reservation payment clears, the matching annual price is locked for 30 calendar days.
+
+        Do not enter personal information, client names, billing details, bank details, credentials, employer-internal information, or confidential information. Those details move to a private channel.
+
+        This public request records purchase intent only. It does not create a quote, contract, invoice, charge, reservation, price lock, license right, or delivery obligation.
+
+  - type: dropdown
+    id: selected_tier
+    attributes:
+      label: Budget-approved tier
+      description: Select the smallest tier covering the reasonable annual forecast. Choose private confirmation if the approved cap covers more than one tier.
+      options:
+        - "Global 1K — JPY 49,800 reservation / JPY 3,980,000 annual"
+        - "Global Plus 2.5K — JPY 98,000 reservation / JPY 7,980,000 annual"
+        - "Global Scale 5K — JPY 198,000 reservation / JPY 14,980,000 annual"
+        - "Global Network 10K — JPY 298,000 reservation / JPY 27,980,000 annual"
+        - "Global Network 20K — JPY 498,000 reservation / JPY 49,800,000 annual"
+        - "Approved budget covers multiple tiers; confirm the smallest eligible tier privately"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: forecast_band
+    attributes:
+      label: Expected annual named-client organization band
+      description: Do not identify clients publicly.
+      options:
+        - "501–1,000"
+        - "1,001–2,500"
+        - "2,501–5,000"
+        - "5,001–10,000"
+        - "10,001–20,000"
+        - "Confirm the forecast band privately"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: budget_authority
+    attributes:
+      label: Internal budget status
+      options:
+        - "Reservation and matching annual price approved, subject to written terms"
+        - "Reservation approved; annual order requires final approval during the 30-day price-lock period"
+        - "Approved spending cap covers the selected tier; exact tier needs private confirmation"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: base_license_status
+    attributes:
+      label: Base-license status
+      options:
+        - "Active Agency Portfolio License"
+        - "Agency Portfolio License procurement is in progress"
+        - "Requesting the base license and this reuse add-on together"
+        - "Need private eligibility confirmation before invoicing"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: intended_outputs
+    attributes:
+      label: Intended derived client deliverables
+      description: Select all public-safe output types that apply.
+      options:
+        - label: "Client-specific written reports or memoranda"
+        - label: "Client-specific presentations"
+        - label: "Derived charts or tables"
+        - label: "Internal advisory workpapers supporting client deliverables"
+
+  - type: dropdown
+    id: invoice_timing
+    attributes:
+      label: Requested private response timing
+      description: Timing is a request, not a guaranteed service level.
+      options:
+        - "Ready to review written terms and invoice instructions within 2 business days"
+        - "Ready to review written terms and invoice instructions within 5 business days"
+        - "Ready to review written terms and invoice instructions within 10 business days"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: procurement_route
+    attributes:
+      label: Expected procurement route
+      description: Do not enter billing or internal procurement details publicly.
+      options:
+        - "Invoice payment after accepted written terms; no purchase order expected"
+        - "Purchase order after accepted written terms"
+        - "Vendor onboarding or security review is required before payment"
+        - "Confirm the procurement route privately"
+    validations:
+      required: true
+
+  - type: input
+    id: public_url
+    attributes:
+      label: Public organization or service URL
+      description: Public URL only. Do not include private portals or personal information.
+      placeholder: "https://example.com"
+    validations:
+      required: true
+
+  - type: textarea
+    id: public_use_case
+    attributes:
+      label: Public-safe purchase context
+      description: State the intended deliverable pattern and approval timing without naming clients or disclosing confidential information.
+      placeholder: "Example: Budget is approved for derived certification-monitoring charts in recurring advisory reports. We are ready to review written terms this week."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: fast_track_acknowledgements
+    attributes:
+      label: Fast-track buyer acknowledgements
+      options:
+        - label: "I have authority to request private written terms and the matching reservation invoice for this organization."
+          required: true
+        - label: "Internal budget authority exists for the selected reservation or an approved cap covering the privately confirmed replacement tier."
+          required: true
+        - label: "Subject to eligibility, scope, and accepted written terms, the buyer is prepared to pay the matching reservation invoice."
+          required: true
+        - label: "I understand the reservation is credited in full against the matching annual price under accepted written terms."
+          required: true
+        - label: "I understand the 30-day annual price lock begins only after eligibility and scope confirmation, accepted written terms, and cleared reservation payment."
+          required: true
+        - label: "I understand public submission creates no quote, contract, invoice, charge, reservation, price lock, license right, or delivery obligation."
+          required: true
+        - label: "I will not enter personal, client, billing, banking, credential, employer-internal, or confidential information."
+          required: true
