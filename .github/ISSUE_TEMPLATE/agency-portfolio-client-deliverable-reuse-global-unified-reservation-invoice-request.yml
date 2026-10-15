@@ -1,0 +1,150 @@
+name: Reuse Global unified reservation invoice request
+description: Select a 1K–20K tier and request private written terms plus the matching reservation invoice.
+title: "[Reuse Global Invoice] Reservation invoice request"
+labels:
+  - buyer-intent
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this unified buyer form when you have selected—or want confirmation of—the smallest Client-Deliverable Reuse Global tier covering your expected annual named end-client organizations.
+
+        | Tier | Annual named-client band | Reservation | Annual price | Remaining after credit |
+        | --- | ---: | ---: | ---: | ---: |
+        | Global 1K | 501–1,000 | JPY 49,800 | JPY 3,980,000 | JPY 3,930,200 |
+        | Global Plus 2.5K | 1,001–2,500 | JPY 98,000 | JPY 7,980,000 | JPY 7,882,000 |
+        | Global Scale 5K | 2,501–5,000 | JPY 198,000 | JPY 14,980,000 | JPY 14,782,000 |
+        | Global Network 10K | 5,001–10,000 | JPY 298,000 | JPY 27,980,000 | JPY 27,682,000 |
+        | Global Network 20K | 10,001–20,000 | JPY 498,000 | JPY 49,800,000 | JPY 49,302,000 |
+
+        The reservation is credited in full toward the selected annual price, subject to eligibility and accepted written terms. After eligibility is confirmed, written terms are accepted, and payment clears, the selected annual price is held for 30 calendar days.
+
+        This public submission is purchase intent only. It does not create a quote, contract, invoice, charge, reservation, price lock, or license right. Eligibility, final scope, accepted outputs, written terms, tax, billing, payment, cancellation, refund treatment, and confidential details move to a private channel.
+
+        Do not enter client names, personal information, billing details, private company data, credentials, employer-internal information, or confidential information.
+
+  - type: dropdown
+    id: selected_tier
+    attributes:
+      label: Selected reservation tier
+      description: Choose the smallest tier whose maximum covers your forecast. Select confirmation if you want the seller to verify the tier privately before invoicing.
+      options:
+        - "Global 1K — JPY 49,800 reservation / JPY 3,980,000 annual"
+        - "Global Plus 2.5K — JPY 98,000 reservation / JPY 7,980,000 annual"
+        - "Global Scale 5K — JPY 198,000 reservation / JPY 14,980,000 annual"
+        - "Global Network 10K — JPY 298,000 reservation / JPY 27,980,000 annual"
+        - "Global Network 20K — JPY 498,000 reservation / JPY 49,800,000 annual"
+        - "Confirm the correct 1K–20K tier privately before invoicing"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: forecast_band
+    attributes:
+      label: Expected annual named-client organization band
+      description: Do not identify clients publicly.
+      options:
+        - "501–1,000"
+        - "1,001–2,500"
+        - "2,501–5,000"
+        - "5,001–10,000"
+        - "10,001–20,000"
+        - "Forecast needs private confirmation"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: base_license_status
+    attributes:
+      label: Base-license status
+      options:
+        - "Active Agency Portfolio License"
+        - "Agency Portfolio License procurement is in progress"
+        - "Requesting the base license and this add-on together"
+        - "Need private eligibility confirmation"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: intended_outputs
+    attributes:
+      label: Intended derived client deliverables
+      description: Select all public-safe output types that apply.
+      options:
+        - label: "Client-specific written reports or memoranda"
+        - label: "Client-specific presentations"
+        - label: "Derived charts or tables"
+        - label: "Internal advisory workpapers supporting client deliverables"
+
+  - type: dropdown
+    id: invoice_action
+    attributes:
+      label: Requested invoice action
+      description: No invoice or charge is created by this public submission.
+      options:
+        - "After private eligibility confirmation, send written terms and the matching reservation invoice"
+        - "Send written terms first; invoice after my private approval"
+        - "Confirm the correct tier and procurement route before preparing written terms"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: procurement_route
+    attributes:
+      label: Expected procurement route
+      description: Do not enter billing or internal procurement details publicly.
+      options:
+        - "Invoice payment after written terms; no purchase order expected"
+        - "Purchase order after written terms"
+        - "Vendor onboarding or security review is expected"
+        - "Procurement route needs private confirmation"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: target_timing
+    attributes:
+      label: Target timing
+      options:
+        - "Ready to review written terms within 10 business days"
+        - "Targeting procurement within 30 days"
+        - "Targeting procurement within 90 days"
+        - "Timing needs private confirmation"
+    validations:
+      required: true
+
+  - type: input
+    id: public_url
+    attributes:
+      label: Public organization or service URL
+      description: Public URL only. Do not include private portals or personal information.
+      placeholder: "https://example.com"
+    validations:
+      required: true
+
+  - type: textarea
+    id: public_use_case
+    attributes:
+      label: Public-safe use case
+      description: Describe the intended deliverable pattern without naming clients or disclosing confidential information.
+      placeholder: "Example: Add derived certification-monitoring charts to recurring advisory reports for the selected annual client band."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Buyer acknowledgements
+      options:
+        - label: "I am asking to begin private eligibility, written-terms, and reservation-invoice processing for the selected tier or its privately confirmed replacement."
+          required: true
+        - label: "I understand the reservation is credited in full toward the selected annual price, subject to accepted written terms."
+          required: true
+        - label: "I understand the 30-day annual price lock begins only after eligibility confirmation, accepted written terms, and cleared reservation payment."
+          required: true
+        - label: "I understand submission alone creates no quote, contract, invoice, charge, reservation, price lock, or license right."
+          required: true
+        - label: "I understand permitted use is limited to accepted derived client deliverables and excludes raw dataset redistribution, sublicensing, resale of access, and a white-label portal or API."
+          required: true
+        - label: "I will not enter client names, personal, billing, credential, employer-internal, or confidential information."
+          required: true
