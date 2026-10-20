@@ -41,3 +41,12 @@ EU Data Act switching obligations create practical questions around SaaS data ex
 The two HTML links above carry coarse GitHub referral attribution. The JSON endpoint intentionally does not: it cannot execute the client KPI script, so adding a campaign parameter there would create an unmeasurable experiment.
 
 For a paid-pilot request, use the clearly disclosed contact route on the live site. Submissions through GitHub require sign-in and may be public/indexable, as disclosed before the link.
+
+## JC-STAR Change Alert Beta (#005)
+
+For procurement, security, and product teams tracking JC-STAR certification changes:
+
+- [View the buyer listing — ¥99,000 / 3 months / up to 100 products](https://github.com/Hirokimm/data-act-exit-audit/issues/40)
+- [Open the JC-STAR beta page](https://data-act-exit-audit.vercel.app/005/jcstar-change-alert.html?utm_source=github&utm_medium=referral&utm_campaign=repo_readme_jcstar_beta)
+
+This beta tracks public requirement and certification changes with source URLs. It is not legal advice, certification support, or a conformity guarantee.
